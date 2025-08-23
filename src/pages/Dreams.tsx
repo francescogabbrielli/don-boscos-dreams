@@ -1,22 +1,21 @@
 import { useEffect, useState } from "react";
 
-import type { DreamSchema } from "../amplify/data/resource";
+import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-
-import "./App.css";
 
 const client = generateClient<DreamSchema>();
 
 type Nullable<T> = T | null;
 
-function App() {
+const DEFAULT_ID = "053"
 
-  const [dreamId, setDreamId] = useState<string>("home");
+// pages/Dreams.tsx
+function Dreams() {
 
-  const [menuitems, setMenuitems] = useState<Array<{id: Nullable<string>, title: Nullable<string>}>>([]);
- 
+  const [dreamId, setDreamId] = useState<string>(DEFAULT_ID);
   const [dream, setDream] = useState<DreamSchema["Dream"]["type"]>();
-
+  const [menuitems, setMenuitems] = useState<Array<{id: Nullable<string>, title: Nullable<string>}>>([]);
+  
   useEffect(() => {
     client.models.Dream.get({id: dreamId}).then(
       (data) => {setDream(data?.data || undefined); console.log(data)},
@@ -29,36 +28,29 @@ function App() {
     )
   });
 
-  function unescape(field: Nullable<string>) {
-      return field?.split('<p>')
-            .filter(p => p)
-            .map((p,n) => (<p key={n}>{p.replace('</p>', '')}</p>))
-  }
-
   return (
     <main>
-      <div className="container py-4 px-3 mx-auto">
-        <h1>Hello, Bootstrap and Vite!</h1>
-        <button className="btn btn-primary">Primary button</button>
+      <div>
+          <h1>Main Dreams</h1>
+          <p>Welcome to the dreams page!</p>
       </div>
       <div id="menu">
         <ul>
         {menuitems.map(menuitem => (
-          <li key={menuitem.id} onClick={() => {setDreamId(menuitem.id || "home")}}>{menuitem.title}</li>
+          <li key={menuitem.id} onClick={() => {setDreamId(menuitem.id || DEFAULT_ID)}}>{menuitem.title}</li>
         ))}
         </ul>
       </div>
       <div id="page">
         <h1>{dream?.title}</h1>
-        <div id="content">
-          {unescape(dream?.content || null)}
+        <div id="content" dangerouslySetInnerHTML={{__html: dream?.content || ""}}>
         </div>
         <div id="explanation">
-          {unescape(dream?.explanation || null)}
+          {dream?.explanation}
         </div>
-      </div>
+      </div>    
     </main>
-  );
+    )
 }
 
-export default App;
+export default Dreams;
