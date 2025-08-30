@@ -9,9 +9,7 @@ export const handler: DreamSchema["importJSON"]["functionHandler"] = async (even
 
   if (data) {
     const array:DreamSchema["Dream"]["type"][] = JSON.parse(data);
-    array.forEach(doc => {
-      client.models.Dream.create(doc);
-    });
+    array.forEach(doc => client.models.Dream.create(doc));
     return "OK: " + array.length;
   }
   

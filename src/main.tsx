@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import App2 from "./App2.tsx";
+import App from "./App.tsx";
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
 
@@ -15,6 +15,6 @@ Amplify.configure(outputs);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App2 />
+    <App />
   </React.StrictMode>
 );

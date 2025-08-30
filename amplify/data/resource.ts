@@ -16,7 +16,8 @@ const dreamSchema = a.schema({
       explanation: a.string(),
       type: a.string(),
       main: a.boolean(),
-      date: a.date()
+      date: a.date(),
+      tags: a.string().array()
     })
     .authorization((allow) => [allow.publicApiKey()]),
   importJSON: a

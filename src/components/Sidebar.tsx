@@ -6,7 +6,9 @@ function Sidebar() {
   return (<div className="d-none d-md-block bg-light" id="sidebarMenu">
     <div className="p-3 border-end" style={{ width: "220px", height: "100vh", position: "fixed", top: "56px" }}>
       <ul className="nav flex-column">
-        {routes.map((route) => (
+        {routes
+          .filter((route) => route.path.indexOf(":") < 0)
+          .map((route) => (
           <li className="nav-item" key={route.path}>
             <NavLink
               to={route.path}

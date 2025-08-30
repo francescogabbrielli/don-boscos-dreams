@@ -1,64 +1,21 @@
-import { useEffect, useState } from "react";
-
-import type { DreamSchema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
+// App.tsx
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout.tsx";
+import { routes } from "./routes.tsx";
 
 import "./App.css";
 
-const client = generateClient<DreamSchema>();
-
-type Nullable<T> = T | null;
-
-function App() {
-
-  const [dreamId, setDreamId] = useState<string>("home");
-
-  const [menuitems, setMenuitems] = useState<Array<{id: Nullable<string>, title: Nullable<string>}>>([]);
- 
-  const [dream, setDream] = useState<DreamSchema["Dream"]["type"]>();
-
-  useEffect(() => {
-    client.models.Dream.get({id: dreamId}).then(
-      (data) => {setDream(data?.data || undefined); console.log(data)},
-    );
-  }, [dreamId]);
-
-  useEffect(() => {
-    client.models.Dream.list({selectionSet: ['id', 'number', 'createdAt', 'title'], filter: {type: {eq: "Dream"}}}).then(
-      (items) => setMenuitems([...items.data])
-    )
-  });
-
-  function unescape(field: Nullable<string>) {
-      return field?.split('<p>')
-            .filter(p => p)
-            .map((p,n) => (<p key={n}>{p.replace('</p>', '')}</p>))
-  }
-
-  return (
-    <main>
-      <div className="container py-4 px-3 mx-auto">
-        <h1>Hello, Bootstrap and Vite!</h1>
-        <button className="btn btn-primary">Primary button</button>
-      </div>
-      <div id="menu">
-        <ul>
-        {menuitems.map(menuitem => (
-          <li key={menuitem.id} onClick={() => {setDreamId(menuitem.id || "home")}}>{menuitem.title}</li>
+const App: React.FC = () => (
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Layout/>}>
+        {routes.map((r) => (
+          <Route index={r.path === "/"} path={r.path === "/" ? undefined : r.path.replace("/", "")} element={r.element} key={r.path} />
         ))}
-        </ul>
-      </div>
-      <div id="page">
-        <h1>{dream?.title}</h1>
-        <div id="content">
-          {unescape(dream?.content || null)}
-        </div>
-        <div id="explanation">
-          {unescape(dream?.explanation || null)}
-        </div>
-      </div>
-    </main>
-  );
-}
+      </Route>
+    </Routes>
+  </BrowserRouter>
+);
 
 export default App;

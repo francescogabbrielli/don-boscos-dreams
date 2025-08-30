@@ -20,7 +20,9 @@ function Header() {
             <i className="bi bi-list fs-4"></i> {/* 3 dashes icon */}
           </button>
           <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuButton">
-            {routes.map((route) => (
+            {routes
+              .filter((route) => route.path.indexOf(":") < 0)
+              .map((route) => (
               <li key={route.path}>
                 <NavLink to={route.path} className="dropdown-item">
                   {route.icon && <i className={`bi bi-${route.icon} me-2`}></i>}

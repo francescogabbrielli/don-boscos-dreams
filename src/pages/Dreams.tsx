@@ -2,34 +2,32 @@ import { useEffect, useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import { Helmet } from "react-helmet";
+import { metadata } from "../meta";
 
 const client = generateClient<DreamSchema>();
 
 type Nullable<T> = T | null;
 
-const DEFAULT_ID = "053"
-
 // pages/Dreams.tsx
 function Dreams() {
 
-  const [dreamId, setDreamId] = useState<string>(DEFAULT_ID);
-  const [dream, setDream] = useState<DreamSchema["Dream"]["type"]>();
-  const [menuitems, setMenuitems] = useState<Array<{id: Nullable<string>, title: Nullable<string>}>>([]);
+  const [menuitems, setMenuitems] = useState<Array<{
+    id: Nullable<string>, 
+    number: Nullable<number>,
+    title: Nullable<string>, 
+    date: Nullable<string>,
+  }>>([]);
   
   useEffect(() => {
-    client.models.Dream.get({id: dreamId}).then(
-      (data) => {setDream(data?.data || undefined); console.log(data)},
-    );
-  }, [dreamId]);
-
-  useEffect(() => {
-    client.models.Dream.list({selectionSet: ['id', 'number', 'createdAt', 'title'], filter: {type: {eq: "Dream"}}}).then(
+    client.models.Dream.list({selectionSet: ['id', 'number', 'date', 'title'], filter: {type: {eq: "Dream"}, main: {eq: true}}}).then(
       (items) => setMenuitems([...items.data])
     )
   });
 
   return (
     <main>
+      <Helmet><title>{metadata.title} - Dreams</title></Helmet>
       <div>
           <h1>Main Dreams</h1>
           <p>Welcome to the dreams page!</p>
@@ -37,18 +35,14 @@ function Dreams() {
       <div id="menu">
         <ul>
         {menuitems.map(menuitem => (
-          <li key={menuitem.id} onClick={() => {setDreamId(menuitem.id || DEFAULT_ID)}}>{menuitem.title}</li>
+          <li key={menuitem.id}>
+            <a href={"/dream/" + menuitem.id}>{menuitem.title}</a>
+            <br/>
+            <em>{menuitem.date}</em>
+          </li>
         ))}
         </ul>
       </div>
-      <div id="page">
-        <h1>{dream?.title}</h1>
-        <div id="content" dangerouslySetInnerHTML={{__html: dream?.content || ""}}>
-        </div>
-        <div id="explanation">
-          {dream?.explanation}
-        </div>
-      </div>    
     </main>
     )
 }
