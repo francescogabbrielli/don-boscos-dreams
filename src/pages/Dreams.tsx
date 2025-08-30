@@ -20,8 +20,11 @@ function Dreams() {
   }>>([]);
   
   useEffect(() => {
-    client.models.Dream.list({selectionSet: ['id', 'number', 'date', 'title'], filter: {type: {eq: "Dream"}, main: {eq: true}}}).then(
-      (items) => setMenuitems([...items.data])
+    client.models.Dream.list({
+      selectionSet: ['id', 'number', 'date', 'title'], 
+      filter: {or: [{type: {eq: "Dream"}}, {type: {eq: "Vision"}}], main: {eq: true}}
+    }).then(
+      (items) => setMenuitems(items.data.sort((i1, i2) => (i1.number || 0) - (i2.number || 0)))
     )
   });
 
@@ -29,14 +32,14 @@ function Dreams() {
     <main>
       <Helmet><title>{metadata.title} - Dreams</title></Helmet>
       <div>
-          <h1>Main Dreams</h1>
+          <h1>Dreams</h1>
           <p>Welcome to the dreams page!</p>
       </div>
       <div id="menu">
         <ul>
         {menuitems.map(menuitem => (
           <li key={menuitem.id}>
-            <a href={"/dream/" + menuitem.id}>{menuitem.title}</a>
+            <b>{menuitem.number}.</b> <a href={"/dream/" + menuitem.id}>{menuitem.title}</a>
             <br/>
             <em>{menuitem.date}</em>
           </li>

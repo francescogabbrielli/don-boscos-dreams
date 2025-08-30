@@ -10,6 +10,7 @@ specifies that any user authenticated via an API key can "create", "read",
 const dreamSchema = a.schema({
   Dream: a
     .model({
+      id: a.string().required(),
       number: a.integer(),
       title: a.string(),
       content: a.string(),

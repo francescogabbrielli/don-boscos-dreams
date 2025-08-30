@@ -27,11 +27,11 @@ function Dream() {
     </div>
     <div style={{visibility: dream ? "visible" : "hidden"}}>
       <h1>{dream?.title || "Not found!"}</h1>
+      <h4>{dream?.number} - {dream?.type} - {dream?.date}</h4>
       <div id="content" dangerouslySetInnerHTML={{__html: dream?.content || ""}}></div>
     </div>
   </main>)
 
 }
-
 
 export default Dream;
