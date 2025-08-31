@@ -4,6 +4,7 @@ import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { Helmet } from "react-helmet";
 import { metadata } from "../meta";
+import { useLocation } from "react-router-dom";
 
 const client = generateClient<DreamSchema>();
 
@@ -18,6 +19,8 @@ function Dreams() {
     title: Nullable<string>, 
     date: Nullable<string>,
   }>>([]);
+
+  const location = useLocation()
   
   useEffect(() => {
     client.models.Dream.list({
@@ -26,7 +29,7 @@ function Dreams() {
     }).then(
       (items) => setMenuitems(items.data.sort((i1, i2) => (i1.number || 0) - (i2.number || 0)))
     )
-  });
+  }, [location.pathname]);
 
   return (
     <main>
@@ -35,7 +38,12 @@ function Dreams() {
           <h1>Dreams</h1>
           <p>Welcome to the dreams page!</p>
       </div>
-      <div id="menu">
+      <div style={{display: menuitems.length ? "none": "block"}}>
+          <div className="spinner-grow big-spinner" role="status">
+              <span className="visually-hidden">Loading...</span>
+          </div>
+      </div>
+      <div id="menu" style={{visibility: menuitems.length ? "visible" : "hidden"}}>
         <ul>
         {menuitems.map(menuitem => (
           <li key={menuitem.id}>

@@ -7,6 +7,13 @@ import { useParams } from "react-router-dom";
 
 const client = generateClient<DreamSchema>();
 
+const NOT_FOUND:DreamSchema["Dream"]["type"] = {
+  id: "000",
+  title: "Not Found!",
+  updatedAt: Date.now().toLocaleString(),
+  createdAt: Date.now().toLocaleString(),
+}
+
 // pages/Dream.tsx
 function Dream() {
 
@@ -15,12 +22,13 @@ function Dream() {
   const [dream, setDream] = useState<DreamSchema["Dream"]["type"]>();
 
   useEffect(() => {
-    client.models.Dream.get({id: id || ""}).then((data) => setDream(data?.data || undefined));
-  })
+    client.models.Dream.get({id: id || ""})
+      .then((data) => setDream(data?.data || NOT_FOUND))
+  }, [id])
 
   return (<main>
     <Helmet><title>{metadata.title} - {dream?.title || "Not found!"}</title></Helmet>
-    <div className="text-center" style={{display: dream ? "none": "block"}}>
+    <div style={{display: dream ? "none": "block"}}>
         <div className="spinner-grow big-spinner" role="status">
             <span className="visually-hidden">Loading...</span>
         </div>
