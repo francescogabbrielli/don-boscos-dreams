@@ -10,6 +10,7 @@ const client = generateClient<DreamSchema>();
 const NOT_FOUND:DreamSchema["Dream"]["type"] = {
   id: "000",
   title: "Not Found!",
+  content: "Wrong page requested, please go back to main index...",
   updatedAt: Date.now().toLocaleString(),
   createdAt: Date.now().toLocaleString(),
 }
@@ -27,14 +28,14 @@ function Dream() {
   }, [id])
 
   return (<main>
-    <Helmet><title>{metadata.title} - {dream?.title || "Not found!"}</title></Helmet>
+    <Helmet><title>{metadata.title} - {dream?.title || ""}</title></Helmet>
     <div style={{display: dream ? "none": "block"}}>
         <div className="spinner-grow big-spinner" role="status">
             <span className="visually-hidden">Loading...</span>
         </div>
     </div>
     <div style={{visibility: dream ? "visible" : "hidden"}}>
-      <h1>{dream?.title || "Not found!"}</h1>
+      <h1>{dream?.title}</h1>
       <h4>{dream?.number} - {dream?.type} - {dream?.date}</h4>
       <div id="content" dangerouslySetInnerHTML={{__html: dream?.content || ""}}></div>
     </div>

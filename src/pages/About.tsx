@@ -4,11 +4,40 @@ import { Helmet } from "react-helmet";
 import { metadata } from "../meta";
 
 const About: React.FC = () => (
-  <div>
+  <main className="container-fluid">
     <Helmet><title>{metadata.title} - About</title></Helmet>
     <h1>About</h1>
-    <p>Welcome to the about page!</p>
-  </div>
+    <h4>References</h4>
+    <p>
+      The dreams listed in this blog are not an exhaustive collection, neither represent an authoritative translation from Italian and/or Spanish. The following sources have been consulted so far:
+    </p>
+    <ul>
+      <li>
+        <a href="https://donboscodreams.wordpress.com/about/#:~:text=The%20dreams%20listed,the%20other%20dreams">
+          Memorie biografiche – Giovanni Bosco
+        </a>
+        &nbsp;-&nbsp;
+        <i>(last accessed September 2025)</i>
+      </li>
+      <li>
+        <a href="https://www.marialuzdivina.com/paginas/dreams/i/pag00.php">
+          LOS SUEÑOS DE SAN JUAN BOSCO
+        </a>
+        &nbsp;-&nbsp;
+        <i>(last accessed August 2025)</i>
+      </li>
+      <li>I sogni di Don Bosco – Le Vie della Cristianità, 2016</li>
+    </ul>
+
+    <h4>Dates</h4>
+    <ul>
+      <li>when the sole year is reported (which is almost always present), dates are specified as January 1st</li>
+      <li>when also the month is present then the first day of the month is specified</li>
+      <li>sometimes only a vague reference to the period of the year is present and then an arbitrarily approximate date is specified</li>
+      <li>when no date is reported or reported as unknown, a completely arbitrary date is guessed based on context and the position among the other dreams</li>
+    </ul>
+
+  </main>
 );
 
 export default About;

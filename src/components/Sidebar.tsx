@@ -7,7 +7,7 @@ function Sidebar() {
     <div className="p-3 border-end" style={{ width: "220px", height: "100vh", position: "fixed", top: "56px" }}>
       <ul className="nav flex-column">
         {routes
-          .filter((route) => route.path.indexOf(":") < 0)
+          .filter((route) => route.path.indexOf(":") < 0 && route.path !== "/")
           .map((route) => (
           <li className="nav-item" key={route.path}>
             <NavLink

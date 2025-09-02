@@ -6,7 +6,7 @@ function Header() {
 
     return (<nav className="navbar navbar-dark bg-dark fixed-top">
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">Don Bosco's Dreams</a>
+        <a className="navbar-brand" href="/">Don Bosco's Dreams</a>
 
         {/* Hamburger dropdown on mobile */}
         <div className="dropdown d-md-none">
@@ -21,7 +21,7 @@ function Header() {
           </button>
           <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuButton">
             {routes
-              .filter((route) => route.path.indexOf(":") < 0)
+              .filter((route) => route.path.indexOf(":") < 0 && route.path !== "/")
               .map((route) => (
               <li key={route.path}>
                 <NavLink to={route.path} className="dropdown-item">
