@@ -8,7 +8,7 @@ const Home: React.FC = () => (
   <main className="container-fluid">
     <Helmet><title>{metadata.title} - Home</title></Helmet>
     <center>
-    <img src={"/images/donbosco.png"} />
+    <img src={"/images/donbosco.png"} style={{width: "100%", maxWidth: "512px"}}/>
     </center>
     <h4>Don Bosco</h4>
     <p>

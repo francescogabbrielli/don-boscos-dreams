@@ -1,14 +1,37 @@
 
 // change the theme
 $primary: rgb(111, 68, 24);
-$secondary: indigo;
+$secondary: darkblue;
   
 @import "../node_modules/bootstrap/scss/bootstrap";
 
+p {
+  text-align: justify;
+}
+
 em {
   color: $primary ;
-  filter: brightness(50%);
+  filter: brightness(75%);
   font-size: 0.95em;
+}
+
+span {
+  color: $secondary;
+  font-style: bold;
+}
+
+span[lang="en"] {
+  display: none;
+  outline:none;
+  cursor:pointer;
+}
+
+span[lang="la"]:active {
+  display: none;
+}
+
+span[lang="la"]:active + span[lang="en"] {
+  display: inline;
 }
 
 .nav-link.active, .nav-link.active:focus {
