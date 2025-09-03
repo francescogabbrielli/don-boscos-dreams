@@ -43,6 +43,7 @@ function Dreams() {
     if (filter.main === undefined)
       return
     
+    setMenuitems([])
     const cacheKey = JSON.stringify(filter)
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "{}")
     localStorage.setItem("searchFilter", cacheKey)
@@ -78,9 +79,12 @@ function Dreams() {
 
   return (
     <main className="container-fluid">
-      <Helmet><title>{metadata.title} - Dreams</title></Helmet>
+      <Helmet>
+        <title>{metadata.title} - Dreams</title>
+        <link rel="stylesheet"></link>
+        </Helmet>
       <h1>Dreams</h1>
-      <p>Welcome to the dreams page!</p>
+      <p>Welcome to the dreams! (more search tools coming soon...)</p>
       
       <h4>Filters</h4>
       <div className="container-fluid border rounded">
@@ -131,7 +135,7 @@ function Dreams() {
         <div className="row row-cols-auto" style={{minWidth: "200px"}}>
         {menuitems.map(menuitem => (
           <div className="col bg-light m-1" key={menuitem.id}>
-            <b>{menuitem.number}.</b> <strong><a href={"/dream/" + menuitem.id}>{menuitem.title}</a></strong>
+            {menuitem.number}. <strong><a href={"/dream/" + menuitem.id}>{menuitem.title}</a></strong>
             <br/> 
             [ <em>{new Date(Date.parse(menuitem.date || '0')).toLocaleDateString()}</em> ]
           </div>

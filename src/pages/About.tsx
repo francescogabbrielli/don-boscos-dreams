@@ -13,14 +13,14 @@ const About: React.FC = () => (
     </p>
     <ul>
       <li>
-        <a href="https://donboscodreams.wordpress.com/about/#:~:text=The%20dreams%20listed,the%20other%20dreams">
+        <a href="http://www.donboscosanto.eu/memorie_biografiche/" target="_blank">
           Memorie biografiche – Giovanni Bosco
         </a>
         &nbsp;-&nbsp;
         <i>(last accessed September 2025)</i>
       </li>
       <li>
-        <a href="https://www.marialuzdivina.com/paginas/dreams/i/pag00.php">
+        <a href="https://www.marialuzdivina.com/paginas/dreams/i/pag00.php" target="_blank">
           LOS SUEÑOS DE SAN JUAN BOSCO
         </a>
         &nbsp;-&nbsp;

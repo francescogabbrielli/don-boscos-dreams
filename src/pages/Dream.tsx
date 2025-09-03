@@ -35,8 +35,8 @@ function Dream() {
         </div>
     </div>
     <div style={{visibility: dream ? "visible" : "hidden"}}>
-      <h1>{dream?.title}</h1>
-      <h4>{dream?.number} - {dream?.type} - {dream?.date}</h4>
+      <h1>{dream?.number}. {dream?.title}</h1>
+      <h4> {new Date(dream?.date || "2025").toLocaleDateString("en-US", metadata.dateOptions)} <small>({dream?.type})</small></h4>
       <div id="content" dangerouslySetInnerHTML={{__html: dream?.content || ""}}></div>
     </div>
   </main>)

@@ -4,8 +4,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout.tsx";
 import { routes } from "./routes.tsx";
 
-import "./App.css";
-
 const App: React.FC = () => (
   <BrowserRouter>
     <Routes>

@@ -1,0 +1,17 @@
+
+// change the theme
+$primary: rgb(111, 68, 24);
+$secondary: indigo;
+  
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+em {
+  color: $primary ;
+  filter: brightness(50%);
+  font-size: 0.95em;
+}
+
+.nav-link.active, .nav-link.active:focus {
+  color: $white;
+  background-color: $primary;
+}

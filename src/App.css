@@ -1,9 +1,0 @@
-em {
-  color: grey;
-  font-size: 0.9em;
-}
-
-.nav-link.active, .nav-link.active:focus {
-  color: aliceblue;
-  background-color: #87cefa;
-}
