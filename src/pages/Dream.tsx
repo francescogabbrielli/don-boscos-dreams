@@ -31,10 +31,11 @@ function Dream() {
         if (data?.data?.number) {
           checkImage("/images/" + (String(data?.data?.number).padStart(3, "0") || "000") + ".jpg")
         }
-        if (localStorage.getItem("translateLatin") === "1") {
-          document.querySelectorAll("span[lang='la']").forEach(span => span.setAttribute("style","display:none"));
-          document.querySelectorAll("span[lang='en']").forEach(span => span.setAttribute("style","display:inline"));
-        }
+        setTimeout(() => {
+          if (localStorage.getItem("translateLatin") === "1") {
+            document.querySelectorAll("span[lang='la']").forEach(span => span.setAttribute("style","display:none"));
+            document.querySelectorAll("span[lang='en']").forEach(span => span.setAttribute("style","display:inline"));
+          }}, 1000);
     })
   }, [id])
 
