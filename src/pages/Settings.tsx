@@ -1,5 +1,5 @@
 // pages/Settings.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
@@ -11,6 +11,10 @@ const client = generateClient<DreamSchema>();
 const Settings: React.FC = () => {
 
   const [done, setDone] = useState(true);
+
+  useEffect(() => {
+    (document.getElementById("latinTranslate") as HTMLInputElement).checked = localStorage.getItem("translateLatin") === "1";
+  }, [])
 
   function handleTranslateChange(event: React.ChangeEvent<HTMLInputElement>) {
     localStorage.setItem("translateLatin", event.target.checked ? "1" : "0");
