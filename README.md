@@ -1,3 +1,24 @@
+# Don Bosco's Dreams
+
+This is an application base on AWS Amplify. Data are imported as JSON files in the following format:
+
+```json
+{
+    "id": string,
+    "number": number,
+    "title": string,
+    "type": string,
+    "main": boolean,
+    "date": string (parsable date),
+    "content": string,
+    "tags": string[]
+}
+```
+
+more field will be added
+
+# AWS Amplify
+
 ## AWS Amplify React+Vite Starter Template
 
 This repository provides a starter template for creating applications using React+Vite and AWS Amplify, emphasizing easy setup for authentication, API, and database capabilities.
