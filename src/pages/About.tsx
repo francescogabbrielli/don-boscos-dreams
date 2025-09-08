@@ -7,6 +7,27 @@ const About: React.FC = () => (
   <main className="container-fluid">
     <Helmet><title>{metadata.title} - About</title></Helmet>
     <h1>About</h1>
+    <center>
+    <img src={"/images/donbosco.png"} style={{width: "100%", maxWidth: "512px"}}/>
+    </center>
+    <h4>Don Bosco</h4>
+    <p>
+He had a very difficult childhood. Once ordained a priest, he devoted all his energies to the education of young people. His great loves, which underpin his spirituality, were: the Eucharist, the Virgin Mary, the Church, fidelity to the Holy Father, and youth.
+    </p>
+    <p>
+He founded the Congregation of the Salesians, a religious community with male and female branches, dedicated to the education of young people, especially the poor. He taught them Christian life and various trades. He attracted and continues to attract multitudes of young people to Christ. The Congregation takes its name from Saint Francis de Sales.
+    </p>
+    <p>
+Famous for his prophetic dreams — 159 of them are known! Perhaps the most famous is that of the <a href="/dream/121-the-niche-of-saint-peter" target="_blank">Nave of Peter</a>.
+    </p>
+    <p>
+Saint Giovanni Bosco also wrote several pamphlets in defense of religion.
+    </p>
+    <p>
+Great builder of churches, including the Basilica of St. John the Evangelist, the Basilica of Mary Help of Christians, and the Church of the Sacred Heart in Rome, where he celebrated his last mass.    
+    </p>
+
+
     <h4>References</h4>
     <p>
       The dreams listed in this blog are not an exhaustive collection, neither represent an authoritative translation from Italian and/or Spanish. The following sources have been consulted so far:

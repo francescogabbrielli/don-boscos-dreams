@@ -1,4 +1,4 @@
-// pages/Import.tsx
+// pages/Settings.tsx
 import React, { useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
@@ -8,9 +8,13 @@ import { metadata } from "../meta";
 
 const client = generateClient<DreamSchema>();
 
-const Import: React.FC = () => {
+const Settings: React.FC = () => {
 
   const [done, setDone] = useState(true);
+
+  function handleTranslateChange(event: React.ChangeEvent<HTMLInputElement>) {
+    localStorage.setItem("translateLatin", event.target.checked ? "1" : "0");
+  }
 
   function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     // Prevent the browser from reloading the page
@@ -32,7 +36,14 @@ const Import: React.FC = () => {
 
   return (<div>
     <Helmet><title>{metadata.title} - Import</title></Helmet>
-    <h1>Import</h1>
+    <h1>Settings</h1>
+    
+    <div className="form-check form-switch">
+      <input className="form-check-input" type="checkbox" role="switch" id="latinTranslate" onChange={handleTranslateChange}/>
+      <label className="form-check-label" htmlFor="latinTranslate">Auto-translate Latin</label>
+    </div>
+    <hr/>
+    <i><b>ONLY ADMIN</b>: The following allows to import a list of dreams in JSON format (array of objects).</i>
     <form method="post" onSubmit={handleSubmit}>
       <div className="form-group">
         <label htmlFor="jsons">list of JSONs</label>
@@ -46,4 +57,4 @@ const Import: React.FC = () => {
   </div>);
 }
 
-export default Import;
+export default Settings;

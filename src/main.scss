@@ -1,6 +1,6 @@
 
 // change the theme
-$primary: rgb(111, 68, 24);
+$primary: rgb(102, 79, 29);
 $secondary: darkblue;
   
 @import "../node_modules/bootstrap/scss/bootstrap";
@@ -9,13 +9,32 @@ p {
   text-align: justify;
 }
 
+@property --t {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+.card {
+  transition: --t 0.3s ease;
+}
+
+.card:hover, .card:focus, .card:active {
+  --t: 0.75;
+}
+
+.card .text-light {
+  text-shadow: 1px 1px black;
+}
+
+
 em {
   color: $primary ;
   filter: brightness(75%);
   font-size: 0.95em;
 }
 
-span {
+span[lang] {
   color: $secondary;
   font-style: bold;
 }

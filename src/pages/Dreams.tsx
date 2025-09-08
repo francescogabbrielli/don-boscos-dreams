@@ -17,6 +17,8 @@ type Filter = {
 
 const DEFAULT_FILTER:Filter = { main: true, types: ["Dream", "Vision"] }
 
+const ONE_DAY:number = 24 * 60 * 60 * 1000;
+
 // pages/Dreams.tsx
 function Dreams() {
 
@@ -32,6 +34,7 @@ function Dreams() {
 
   const location = useLocation();
 
+  // load filter from cached value
   useEffect(() => {
     const f = localStorage.getItem("searchFilter")
     setFilter(f ? JSON.parse(f) : DEFAULT_FILTER)
@@ -45,11 +48,14 @@ function Dreams() {
     
     setMenuitems([])
     const cacheKey = JSON.stringify(filter)
-    const cached = JSON.parse(localStorage.getItem(cacheKey) || "{}")
     localStorage.setItem("searchFilter", cacheKey)
 
-    if (cached?.data) {      1
+    // retrieve cached data and check if still valid (1 day)...
+    const cached = JSON.parse(localStorage.getItem(cacheKey) || "{}")
+    if (cached?.time && (Date.now() - cached.time) < ONE_DAY && Array.isArray(cached.data)) {
       setMenuitems(cached.data)
+    
+    // ...otherwise query from DB
     } else {
       client.models.Dream.list({
         selectionSet: ['id', 'number', 'date', 'title'], 
@@ -80,11 +86,10 @@ function Dreams() {
   return (
     <main className="container-fluid">
       <Helmet>
-        <title>{metadata.title} - Dreams</title>
-        <link rel="stylesheet"></link>
-        </Helmet>
+        <title>{metadata.title} - Search</title>
+      </Helmet>
       <h1>Dreams</h1>
-      <p>Welcome to the dreams! (more search tools coming soon...)</p>
+      <p>Welcome to the all dreams! (more search tools coming soon...)</p>
       
       <h4>Filters</h4>
       <div className="container-fluid border rounded">

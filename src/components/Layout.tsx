@@ -17,7 +17,7 @@ const Layout: React.FC = () => (
     <style>{`
       @media (min-width: 768px) {
         #mainContent {
-          margin-left: 220px;
+          margin-left: 180px;
         }
       }
     `}</style>
