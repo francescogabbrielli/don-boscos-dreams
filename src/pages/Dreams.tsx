@@ -1,3 +1,5 @@
+// pages/Dreams.tsx
+
 import { ChangeEvent, useEffect, useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
@@ -19,7 +21,6 @@ const DEFAULT_FILTER:Filter = { main: true, types: ["Dream", "Vision"] }
 
 const ONE_DAY:number = 24 * 60 * 60 * 1000;
 
-// pages/Dreams.tsx
 function Dreams() {
 
   const [filter, setFilter] = useState<Filter>({});

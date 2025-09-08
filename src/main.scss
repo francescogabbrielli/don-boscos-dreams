@@ -57,3 +57,11 @@ span[lang="la"]:active + span[lang="en"] {
   color: $white;
   background-color: $primary;
 }
+
+.featured-image {
+  max-width: 100%;
+  height: auto;
+  border: 1px dashed gray;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}

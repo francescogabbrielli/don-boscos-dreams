@@ -1,3 +1,5 @@
+// pages/Dream.tsx
+
 import { Helmet } from "react-helmet";
 import { generateClient } from "aws-amplify/api";
 import { DreamSchema } from "../../amplify/data/resource";
@@ -15,7 +17,6 @@ const NOT_FOUND:DreamSchema["Dream"]["type"] = {
   createdAt: Date.now().toLocaleString(),
 }
 
-// pages/Dream.tsx
 function Dream() {
 
   const {id} = useParams();
@@ -56,7 +57,7 @@ function Dream() {
     <div style={{visibility: dream ? "visible" : "hidden"}}>
       <h1>{dream?.number}. {dream?.title}</h1>
       <h6> <i>{new Date(dream?.date || "2025").toLocaleDateString("en-US", metadata.dateOptions)} <small>({dream?.type})</small></i></h6>
-      { image ? <img className="border rounded" src={image.src} alt={dream?.title || "?"} /> : <></> }
+      { image ? <img className="featured-image" src={image.src} alt={dream?.title || "?"} /> : <></> }
       <div id="content" dangerouslySetInnerHTML={{__html: dream?.content || ""}}></div>
     </div>
   </main>)

@@ -1,4 +1,5 @@
 // pages/Settings.tsx
+
 import React, { useEffect, useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
