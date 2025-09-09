@@ -4,7 +4,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { metadata } from "../meta";
 import { useLocation } from "react-router-dom";
 
@@ -17,13 +17,14 @@ type Filter = {
   types?: Array<string>
 };
 
+const INITIAL_FILTER:Filter = { main: true, types: [] }
 const DEFAULT_FILTER:Filter = { main: true, types: ["Dream", "Vision"] }
 
 const ONE_DAY:number = 24 * 60 * 60 * 1000;
 
 function Dreams() {
 
-  const [filter, setFilter] = useState<Filter>({});
+  const [filter, setFilter] = useState<Filter>(INITIAL_FILTER);
 
   const [menuitems, setMenuitems] = useState<Array<{
     id: Nullable<string>, 
@@ -32,6 +33,8 @@ function Dreams() {
     date: Nullable<string>,
 //    tags: Nullable<Array<string>>
   }>>([]);
+
+  const [error, setError] = useState<string>();
 
   const location = useLocation();
 
@@ -43,17 +46,20 @@ function Dreams() {
 
   // load data
   useEffect(() => {
-    
-    if (filter.main === undefined)
+
+    if (filter === INITIAL_FILTER)
       return
     
     setMenuitems([])
+    setError(undefined)
+
     const cacheKey = JSON.stringify(filter)
     localStorage.setItem("searchFilter", cacheKey)
 
     // retrieve cached data and check if still valid (1 day)...
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "{}")
     if (cached?.time && (Date.now() - cached.time) < ONE_DAY && Array.isArray(cached.data)) {
+      
       setMenuitems(cached.data)
     
     // ...otherwise query from DB
@@ -69,10 +75,14 @@ function Dreams() {
           const results = items.data.sort(
             (i1, i2) => i1.number && i2.number ? i1.number - i2.number : i1.date?.localeCompare(i2.date || "") || 0
           )
-          localStorage.setItem(cacheKey, JSON.stringify({data: results, time: Date.now()}))
-          setMenuitems(results)
+          if (results?.length > 0) {
+            localStorage.setItem(cacheKey, JSON.stringify({data: results, time: Date.now()}))
+            setMenuitems(results)
+          } else {
+            setError("No items found")
+          }
         }
-      )    
+      ).catch(err => setError(err) )
     }
   }, [filter]);
 
@@ -85,11 +95,12 @@ function Dreams() {
   }
 
   return (
-    <main className="container-fluid">
+    <HelmetProvider>
+    <div className="container-fluid">
       <Helmet>
         <title>{metadata.title} - Search</title>
       </Helmet>
-      <h1>Dreams</h1>
+      <h1>Search</h1>
       <p>Welcome to the all dreams! (more search tools coming soon...)</p>
       
       <h4>Filters</h4>
@@ -132,10 +143,13 @@ function Dreams() {
       </div>
       <br></br>
       <h4>List</h4>
-      <div style={{display: menuitems.length ? "none": "block"}}>
+      <div style={{display: menuitems.length || error ? "none": "block"}}>
         <div className="spinner-grow big-spinner" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
+      </div>
+      <div className="container" style={{visibility: error ? "visible" : "hidden"}}>
+        <p className="text-danger">{error}</p>
       </div>
       <div id="menu" className="container-fluid border rounded" style={{visibility: menuitems.length ? "visible" : "hidden"}}>
         <div className="row row-cols-auto" style={{minWidth: "200px"}}>
@@ -149,7 +163,8 @@ function Dreams() {
         </div>
       </div>
 
-    </main>
+    </div>
+    </HelmetProvider>
     )
 }
 

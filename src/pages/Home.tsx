@@ -2,12 +2,13 @@
 
 import React from "react";
 
-import { Helmet } from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { metadata } from '../meta';
 
 const Home: React.FC = () => (
+  <HelmetProvider>
   <div className="container">
-    <Helmet><title>{metadata.title} - Home</title></Helmet>    
+      <Helmet><title>{metadata.title} - Home</title></Helmet>
     <h1>The Dreams</h1>
     <p>
     Many of us know of Don Bosco’s prophetic dreams, particularly that famous one in which a wonderful ship was harassed by multitudes of small ships.
@@ -20,6 +21,9 @@ const Home: React.FC = () => (
     </p>
     <p>
     More than ever, we must learn from Don Bosco the importance of a simple heart that believes and surrenders to Divine Providence, to Mary Help of Christians (Santa Maria Ausiliatrice).
+    </p>
+    <p>
+      <em>Migrated from WordPress blog: <a href="https://donboscodreams.wordpress.com" target="wordpress">donboscodreams.wordpress.com</a></em>
     </p>
     <div className="row mb-2">
         <div className="col-md-6">
@@ -46,6 +50,7 @@ const Home: React.FC = () => (
         </div>
       </div>
   </div>
+  </HelmetProvider>
 );
 
 export default Home;

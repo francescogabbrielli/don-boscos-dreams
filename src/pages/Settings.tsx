@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { metadata } from "../meta";
 
 const client = generateClient<DreamSchema>();
@@ -39,7 +39,9 @@ const Settings: React.FC = () => {
     
   }
 
-  return (<div>
+  return (
+  <HelmetProvider>
+  <div>
     <Helmet><title>{metadata.title} - Import</title></Helmet>
     <h1>Settings</h1>
     
@@ -59,7 +61,8 @@ const Settings: React.FC = () => {
         <button disabled={!done} type="submit" className="btn btn-primary">Import</button>
       </div>
   </form>
-  </div>);
+  </div>
+  </HelmetProvider>);
 }
 
 export default Settings;

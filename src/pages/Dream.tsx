@@ -1,6 +1,6 @@
 // pages/Dream.tsx
 
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import { generateClient } from "aws-amplify/api";
 import { DreamSchema } from "../../amplify/data/resource";
 import { useEffect, useState } from "react";
@@ -47,7 +47,9 @@ function Dream() {
       img.src = imageSrc;
   }
 
-  return (<main>
+  return (
+  <HelmetProvider>
+  <div>
     <Helmet><title>{metadata.title} - {dream?.title || ""}</title></Helmet>
     <div style={{display: dream ? "none": "block"}}>
         <div className="spinner-grow big-spinner" role="status">
@@ -60,7 +62,8 @@ function Dream() {
       { image ? <img className="featured-image" src={image.src} alt={dream?.title || "?"} /> : <></> }
       <div id="content" dangerouslySetInnerHTML={{__html: dream?.content || ""}}></div>
     </div>
-  </main>)
+  </div>
+  </HelmetProvider>)
 
 }
 

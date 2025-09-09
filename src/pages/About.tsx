@@ -1,11 +1,12 @@
 // pages/About.tsx
 
 import React from "react";
-import { Helmet } from "react-helmet";
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { metadata } from "../meta";
 
 const About: React.FC = () => (
-  <main className="container-fluid">
+  <HelmetProvider>
+  <div className="container-fluid">
     <Helmet><title>{metadata.title} - About</title></Helmet>
     <h1>About</h1>
     <center>
@@ -59,7 +60,8 @@ Great builder of churches, including the Basilica of St. John the Evangelist, th
       <li>when no date is reported or reported as unknown, a completely arbitrary date is guessed based on context and the position among the other dreams</li>
     </ul>
 
-  </main>
+  </div>
+  </HelmetProvider>
 );
 
 export default About;
