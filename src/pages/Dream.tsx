@@ -7,6 +7,11 @@ import { useEffect, useState } from "react";
 import { metadata } from "../meta";
 import { useParams } from "react-router-dom";
 
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from "swiper/modules";
+import 'swiper/css';
+import 'swiper/css/pagination';
+
 const client = generateClient<DreamSchema>();
 
 const NOT_FOUND:DreamSchema["Dream"]["type"] = {
@@ -23,12 +28,27 @@ function Dream() {
 
   const [dream, setDream] = useState<DreamSchema["Dream"]["type"]>();
 
+  const [pages, setPages] = useState<Array<string>>([]);
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
   const [image, setImage] = useState<HTMLImageElement>();
+    
+  // const SwiperNavigations = () => {
+  //   const swiper = useSwiper();
+  //   return (
+  //     <div className="navigation-btns">
+  //       <button onClick={() => swiper.slidePrev()} >PREV</button>
+  //       <button onClick={() => swiper.slideNext()} >NEXT</button>
+  //     </div>
+  //   )
+  // }
 
   useEffect(() => {
     client.models.Dream.get({id: id || ""})
       .then((data) => {
         setDream(data?.data || NOT_FOUND)
+        setPages((data?.data?.content || "").split("<!--nextpage-->") || [])
         if (data?.data?.number) {
           checkImage("/images/" + (String(data?.data?.number).padStart(3, "0") || "000") + ".jpg")
         }
@@ -49,18 +69,33 @@ function Dream() {
 
   return (
   <HelmetProvider>
-  <div>
+  <div className="container-sm">
     <Helmet><title>{metadata.title} - {dream?.title || ""}</title></Helmet>
     <div style={{display: dream ? "none": "block"}}>
         <div className="spinner-grow big-spinner" role="status">
             <span className="visually-hidden">Loading...</span>
         </div>
     </div>
-    <div style={{visibility: dream ? "visible" : "hidden"}}>
+    <div style={{visibility: dream ? "visible" : "hidden"}}>    
       <h1>{dream?.number}. {dream?.title}</h1>
-      <h6> <i>{new Date(dream?.date || "2025").toLocaleDateString("en-US", metadata.dateOptions)} <small>({dream?.type})</small></i></h6>
-      { image ? <img className="featured-image" src={image.src} alt={dream?.title || "?"} /> : <></> }
-      <div id="content" dangerouslySetInnerHTML={{__html: dream?.content || ""}}></div>
+      <h6><i>{new Date(dream?.date || "2025").toLocaleDateString("en-US", metadata.dateOptions)} <small>({dream?.type})</small></i></h6>
+      
+      <Swiper
+        pagination={{type: "progressbar"}}
+        modules={[Pagination, Navigation]}
+        onSlideChange={(w) => {
+          window.scrollTo(0, w.activeIndex < currentPage ? (document.getElementById("content_"+(w.activeIndex+1))?.scrollHeight || window.innerHeight) - window.innerHeight + 160 : 0);
+          setCurrentPage(w.activeIndex + 1);
+        }}
+        className="mySwiper" >
+        { 
+          pages.map((page, index) => 
+            <SwiperSlide key={"slide_" + (index+1)}>
+              { image && index==0 ? <img className="featured-image" src={image.src} alt={dream?.title || "?"} /> : <></> }
+              <div id={"content_" + (index+1)} dangerouslySetInnerHTML={{__html: page || "No content?"}}></div>
+            </SwiperSlide>)
+        }
+      </Swiper>
     </div>
   </div>
   </HelmetProvider>)
