@@ -38,17 +38,17 @@ span[lang] {
   color: $secondary;
 }
 
-span.alt {
+span[lang].alt {
   display: none;
   outline: none;
   cursor: pointer;
 }
 
-span:not(.alt):active {
+span[lang]:not(.alt):active {
   display: none;
 }
 
-span:not(.alt):active + span.alt, span.alt + span:not(.alt):active {
+span[lang]:not(.alt):active + span[lang].alt, span[lang].alt + span[lang]:not(.alt):active {
   display: inline;
 }
 
