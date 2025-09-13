@@ -36,20 +36,19 @@ em {
 
 span[lang] {
   color: $secondary;
-  font-style: bold;
 }
 
-span[lang="en"] {
+span.alt {
   display: none;
-  outline:none;
-  cursor:pointer;
+  outline: none;
+  cursor: pointer;
 }
 
-span[lang="la"]:active {
+span:not(.alt):active {
   display: none;
 }
 
-span[lang="la"]:active + span[lang="en"] {
+span:not(.alt):active + span.alt, span.alt + span:not(.alt):active {
   display: inline;
 }
 
@@ -64,4 +63,24 @@ span[lang="la"]:active + span[lang="en"] {
   border: 1px dashed gray;
   border-radius: 8px;
   margin-bottom: 1rem;
+}
+
+.dot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: $secondary;
+  color: white;
+  font-size: 0.7em;
+  cursor: pointer;
+  margin: 0 1px;
+  user-select: none;
+}
+
+.dot.active {
+  background-color: $primary;
+  font-weight: bold;
 }
