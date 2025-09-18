@@ -17,6 +17,7 @@ p {
 
 .card {
   transition: --t 0.3s ease;
+  height: -webkit-fill-available;
 }
 
 .card:hover, .card:focus, .card:active {
@@ -83,4 +84,8 @@ span[lang]:not(.alt):active + span[lang].alt, span[lang].alt + span[lang]:not(.a
 .dot.active {
   background-color: $primary;
   font-weight: bold;
+}
+
+.content {
+  margin: 1em;
 }

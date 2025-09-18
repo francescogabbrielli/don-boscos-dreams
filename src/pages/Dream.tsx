@@ -53,8 +53,9 @@ function Dream() {
   }, [id])
 
   useEffect(() => {
-      const alt = localStorage.getItem("translateLatin") === "1" ? "la" : "en";
-      document.querySelectorAll("span[lang='" + alt + "']").forEach(span => span.classList.add("alt"));
+      const alt = localStorage.getItem("translateLatin") === "1" ? "la" : "en"
+      document.querySelectorAll("span[lang='" + alt + "']").forEach(span => span.classList.add("alt"))
+      document.querySelectorAll(".content p").forEach(p => p.classList.add("swiper-no-swiping"))
   }, [dream])
 
   function checkImage(imageNr?: number) {
@@ -95,20 +96,20 @@ function Dream() {
       <Swiper className="mySwiper" 
         pagination={{type: "progressbar"}}
         modules={[Pagination, Navigation]}
-        preventInteractionOnTransition={true}
-        simulateTouch={false}
         onSwiper={setSwiper}
         onSlideChange={(w) => {
           if (w.activeIndex === currentPage - 1) return;
-          window.scrollTo(0, w.activeIndex < currentPage ? (document.getElementById("content_"+(w.activeIndex+1))?.scrollHeight || window.innerHeight) - window.innerHeight + 160 : 0);
+          window.scrollTo(0, w.activeIndex < currentPage ? (document.getElementById("content_"+(w.activeIndex+1))?.scrollHeight || window.innerHeight) - window.innerHeight + 208 : 0);
           setCurrentPage(w.activeIndex + 1);
         }}>
         { 
           pages.map((page, index) => 
             <SwiperSlide key={"slide_" + (index+1)}>
               { image && index==0 ? <img className="featured-image" src={image.src} alt={dream?.title || "?"} /> : <></> }
-              <div id={"content_" + (index+1)} dangerouslySetInnerHTML={{__html: page || "No content?"}}></div>
-              { currentPage < pages.length ? <center> <p className="btn btn-secondary" onClick={() => swiper?.slideTo(index+1)}>Continue reading...</p></center> : <></> }
+              <div className="content" id={"content_" + (index+1)} dangerouslySetInnerHTML={{__html: page || "No content?"}}></div>
+              <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <span></span><em className="small text-muted">- {index+1}/{pages.length} -</em>{ currentPage < pages.length ? <span className="btn btn-secondary border small" onClick={() => swiper?.slideTo(index+1)}>Continue reading...</span> : <span></span> }
+              </div>
             </SwiperSlide>)
         }
       </Swiper>

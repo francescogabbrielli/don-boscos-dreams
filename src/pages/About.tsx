@@ -49,7 +49,7 @@ Great builder of churches, including the Basilica of St. John the Evangelist, th
         &nbsp;-&nbsp;
         <i>(last accessed August 2025)</i>
       </li>
-      <li>I sogni di Don Bosco – Le Vie della Cristianità, 2016</li>
+      <li>I sogni di Don Bosco - Le Vie della Cristianità, 2016</li>
     </ul>
 
     <h4>Dates</h4>
@@ -59,6 +59,9 @@ Great builder of churches, including the Basilica of St. John the Evangelist, th
       <li>sometimes only a vague reference to the period of the year is present and then an arbitrarily approximate date is specified</li>
       <li>when no date is reported or reported as unknown, a completely arbitrary date is guessed based on context and the position among the other dreams</li>
     </ul>
+
+    <h4>Latin translations</h4>
+    <p>Almost all latin in the text is provided with the translation, that can be shown by clicking/tapping (and keeping it) on the text. Another option is to automatically translate all latin text (see the <a href="/settings">Settings</a> page)</p>
 
   </div>
   </HelmetProvider>

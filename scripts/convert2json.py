@@ -5,6 +5,7 @@
 import xml.etree.ElementTree as ET
 import json
 import re
+from sys import argv
 
 def load_latin():
     """Carica il file di traduzioni latine in un dizionario"""
@@ -100,4 +101,4 @@ def wordpress_xml_to_posts_json(input_file, output_file):
 # wordpress_xml_to_posts_json("input.xml", "output.json")
 #
 if __name__ == "__main__":
-    wordpress_xml_to_posts_json("../../../../../Downloads/donbosco039sdreams.WordPress.2025-09-13.xml", "donboscodreams.json")
+    wordpress_xml_to_posts_json(argv[1], "donboscodreams.json")

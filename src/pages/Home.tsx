@@ -48,6 +48,11 @@ const Home: React.FC = () => (
             </div>
           </div>
         </div>
+        <div className="col-md-12">
+          <center>
+          <span className="btn btn-secondary" onClick={() => location.href="/dreams"}>See more</span>
+          </center>
+        </div>
       </div>
   </div>
   </HelmetProvider>
