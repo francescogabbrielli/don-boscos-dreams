@@ -4,8 +4,35 @@ import React from "react";
 
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { metadata } from '../meta';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { DreamSchema } from "../../amplify/data/resource";
+import { generateClient } from "aws-amplify/api";
 
-const Home: React.FC = () => (
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+
+const client = generateClient<DreamSchema>();
+
+const Home: React.FC = () => {
+
+  const [showcaseDreams, setShowcaseDreams] = React.useState<Array<DreamSchema["Dream"]["type"]>>([]);
+
+  React.useEffect(() => {
+    client.models.Dream.list({ filter: { showcase: { eq: true } } })
+      .then((res) => {
+        console.log(res.data)
+        // Sort dreams by number ascending
+        const sortedDreams = res.data
+          .filter((dream) => dream.number !== undefined && dream.number !== null)
+          .sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
+        setShowcaseDreams(sortedDreams);
+      });
+  }, []);
+
+  return (
   <HelmetProvider>
   <div className="container">
       <Helmet><title>{metadata.title} - Home</title></Helmet>
@@ -26,36 +53,52 @@ const Home: React.FC = () => (
       <em>Migrated from WordPress blog: <a href="https://donboscodreams.wordpress.com" target="wordpress">donboscodreams.wordpress.com</a></em>
     </p>
     <div className="row mb-2">
-        <div className="col-md-6">
-          <div className="card flex-md-row mb-4 box-shadow h-md-250" style={{backgroundImage: "linear-gradient(to right, rgba(0, 0, 0, var(--t)) 0 100%), url('/images/037.jpg')", backgroundSize: "cover"}}>
+    <div className="col-md-12">
+      <h2>Featured</h2>
+      <Swiper
+        slidesPerView={2}
+        spaceBetween={10}
+        speed={1000}
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: true,
+        }}
+        pagination={{
+          clickable: true,
+        }}
+        navigation={true}
+        modules={[Pagination, Navigation, Autoplay]}
+        className="mySwiper">
+        {showcaseDreams.map((dream) => (
+          <SwiperSlide key={dream.number}>
+            <div className="card flex-md-row mb-4 box-shadow h-md-250" 
+                style={{
+                  backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, var(--t)) 0 100%), url('/images/${String(dream.number).padStart(3, "0")}.jpg')`, 
+                  backgroundSize: "cover",
+                  height: "300px"}}>
             <div className="card-body d-flex flex-column align-items-start">
               <h3 className="mb-0">
-                <a className="text-light" href="/dream/037-the-two-columns">The Two Columns</a>
+                <a className="text-light" href={"/dream/" + dream.id}>{dream.title}</a>
               </h3>
-              <div className="mb-1 text-light">1862</div>
-              <p className="card-text mb-auto text-light">Imagine that you are with me on the seashore, or rather, on an isolated rock, from which you can see no land except what is beneath your feet. Across that liquid surface, you can see an innumerable multitude of ships arrayed in battle formation, their prows terminating in a sharp iron spear-like prow that wounds and pierces everything it collides with.</p>
+              <div className="mb-1 text-light">{dream.date}</div>
+              <p className="card-text mb-auto text-light"></p>
            </div>
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="card flex-md-row mb-4 box-shadow h-md-250" style={{backgroundImage: "linear-gradient(to right, rgba(0, 0, 0, var(--t)) 0 100%), url('/images/053.jpg')", backgroundSize: "cover"}}>
-            <div className="card-body d-flex flex-column align-items-start">
-              <h3 className="mb-0">
-                <a className="text-light" href="/dream/053-the-magic-lantern">The Magic Lantern (A Smarthpone?)</a>
-              </h3>
-              <div className="mb-1 text-light">1865</div>
-              <p className="card-text mb-auto text-light shadow" style={{textShadow: "1px 1px black"}}>I seemed to find myself in the church full of young people, observing that very few were approaching Holy Communion. Near the balustrade of the main altar stood a tall, black man with two horns emerging from his head.</p>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-12">
-          <center>
-          <span className="btn btn-secondary" onClick={() => location.href="/dreams"}>See more</span>
-          </center>
-        </div>
-      </div>
+           </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
+    </div>
+    <div className="row">
+    <div className="col-md-12">
+      <center>
+      <span className="btn btn-secondary" onClick={() => location.href="/dreams"}>See more</span>
+      </center>
+    </div>
+    </div>
   </div>
-  </HelmetProvider>
-);
+  </HelmetProvider>)
+}
+
 
 export default Home;

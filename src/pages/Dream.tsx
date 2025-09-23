@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperType } from 'swiper';
 import { Navigation, Pagination } from "swiper/modules";
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -68,55 +69,54 @@ function Dream() {
 
   return (
   <HelmetProvider>
-  <div className="container-sm">
-    
     <Helmet><title>{metadata.title} - {dream?.title || ""}</title></Helmet>
-
-    <div style={{display: dream ? "none": "block"}}>
+    <div className="container-sm">    
+    
+      <div style={{display: dream ? "none": "block"}}>
         <div className="spinner-grow big-spinner" role="status">
-            <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">Loading...</span>
         </div>
-    </div>
-
-    <div style={{visibility: dream ? "visible" : "hidden"}}>
-      
-      <h1>{dream?.number}. {dream?.title}</h1>
-
-      {/* show date and type on the left and pagination on the right */}
-      <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-        <h6><i>{new Date(dream?.date || "2025").toLocaleDateString("en-US", metadata.dateOptions)} <small>({dream?.type})</small></i></h6>
-        <div className="btn-group" role="group" aria-label="Basic example" style={{visibility: pages.length > 1 ? "visible" : "hidden"}}>{
-          pages.map((_, i) => 
-            <span key={"dot_"+(i+1)} 
-              className={"dot " + (i+1 === currentPage ? "active" : "")} 
-              onClick={() => setCurrentPage(i+1)}>{i+1}</span>)
-        }</div>
       </div>
-      
-      <Swiper className="mySwiper" 
-        pagination={{type: "progressbar"}}
-        modules={[Pagination, Navigation]}
-        onSwiper={setSwiper}
-        onSlideChange={(w) => {
-          if (w.activeIndex === currentPage - 1) return;
-          window.scrollTo(0, w.activeIndex < currentPage ? (document.getElementById("content_"+(w.activeIndex+1))?.scrollHeight || window.innerHeight) - window.innerHeight + 208 : 0);
-          setCurrentPage(w.activeIndex + 1);
-        }}>
-        { 
-          pages.map((page, index) => 
-            <SwiperSlide key={"slide_" + (index+1)}>
-              { image && index==0 ? <img className="featured-image" src={image.src} alt={dream?.title || "?"} /> : <></> }
-              <div className="content" id={"content_" + (index+1)} dangerouslySetInnerHTML={{__html: page || "No content?"}}></div>
-              <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                <span></span><em className="small text-muted">- {index+1}/{pages.length} -</em>{ currentPage < pages.length ? <span className="btn btn-secondary border small" onClick={() => swiper?.slideTo(index+1)}>Continue reading...</span> : <span></span> }
-              </div>
-            </SwiperSlide>)
-        }
-      </Swiper>
-      
-    </div>
 
-  </div>
+      <div style={{visibility: dream ? "visible" : "hidden"}}>
+        
+        <h1>{dream?.number}. {dream?.title}</h1>
+
+        {/* show date and type on the left and pagination on the right */}
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <h6><i>{new Date(dream?.date || "2025").toLocaleDateString("en-US", metadata.dateOptions)} <small>({dream?.type})</small></i></h6>
+          <div className="btn-group" role="group" aria-label="Basic example" style={{visibility: pages.length > 1 ? "visible" : "hidden"}}>{
+            pages.map((_, i) => 
+              <span key={"dot_"+(i+1)} 
+                className={"dot " + (i+1 === currentPage ? "active" : "")} 
+                onClick={() => setCurrentPage(i+1)}>{i+1}</span>)
+          }</div>
+        </div>
+        
+        <Swiper className="mySwiper" 
+          pagination={{type: "progressbar"}}
+          modules={[Pagination, Navigation]}
+          onSwiper={setSwiper}
+          onSlideChange={(w) => {
+            if (w.activeIndex === currentPage - 1) return;
+            window.scrollTo(0, w.activeIndex < currentPage ? (document.getElementById("content_"+(w.activeIndex+1))?.scrollHeight || window.innerHeight) - window.innerHeight + 208 : 0);
+            setCurrentPage(w.activeIndex + 1);
+          }}>
+          { 
+            pages.map((page, index) => 
+              <SwiperSlide key={"slide_" + (index+1)}>
+                { image && index==0 ? <img className="featured-image" src={image.src} alt={dream?.title || "?"} /> : <></> }
+                <div className="content" id={"content_" + (index+1)} dangerouslySetInnerHTML={{__html: page || "No content?"}}></div>
+                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                  <span></span><em className="small text-muted">- {index+1}/{pages.length} -</em>{ currentPage < pages.length ? <span className="btn btn-secondary border small" onClick={() => swiper?.slideTo(index+1)}>Continue reading...</span> : <span></span> }
+                </div>
+              </SwiperSlide>)
+          }
+        </Swiper>
+        
+      </div>
+
+    </div>
   </HelmetProvider>)
 
 }

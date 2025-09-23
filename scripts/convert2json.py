@@ -7,15 +7,34 @@ import json
 import re
 from sys import argv
 
+
 def load_latin():
     """Carica il file di traduzioni latine in un dizionario"""
     try:
         with open("./latin_translations.json", "r", encoding="utf-8") as f:
-            return json.load(f)   
+            data = json.load(f)   
+            return list(data.items())
     except FileNotFoundError:
-        print("File latin_translaftion.json non trovato. Le traduzioni latine non saranno applicate.")  
+        print("File latin_translations.json non trovato. Le traduzioni latine non saranno applicate.")  
         return None
 
+def match_case(original: str, translation: str) -> str:
+    """Adatta il case della traduzione in base al testo originale."""
+    if original.isupper():
+        return translation.upper()
+    elif original.islower():
+        return translation.lower()
+    elif original[0].isupper():
+        return translation.capitalize()
+    else:
+        return translation  # fallback
+    
+def latin_replacer(translation):   
+    def replacer(match):
+        original = match.group(0)
+        adjusted = match_case(original, translation)
+        return f"<span lang='la'>{original}</span><span lang='en'>{adjusted}</span>"
+    return replacer
 
 def clean_tags(html_content, latin_translations=None):
     
@@ -31,15 +50,16 @@ def clean_tags(html_content, latin_translations=None):
     # fix internal references
     fix_href = re.sub(r'(a href=")(.+/[0-9]+/[0-9]+/[0-9]+/)([0-9]{3}[-a-z]+/")', '\\1/dream/\\3', stripped_h4)
     
-    # add latin translation to em tags    
+    # add latin translation to em tags
     with_latin_tr = fix_href
-    if latin_translations is not None:
-        for latin, translation in latin_translations.items():
-            if latin in fix_href:
-                with_latin_tr = with_latin_tr.replace(latin, f'<span lang="la">{latin}</span><span lang="en">{translation}</span>')
+    def em_replacer(match):
+        content = match.group(1)
+        for latin, translation in latin_translations:
+            pattern = re.compile(rf"\b{re.escape(latin)}\b", re.IGNORECASE)
+            content = pattern.sub(latin_replacer(translation), content) if not "<span lang='la'>" in content else content
+        return f"<em>{content}</em>"
     
-    return with_latin_tr
-
+    return re.sub(r"<em>(.*?)</em>", em_replacer, with_latin_tr, flags=re.DOTALL) if latin_translations else with_latin_tr
 
 def wordpress_xml_to_posts_json(input_file, output_file):
     """Converte un file WordPress XML (WXR) in una lista JSON di post puliti"""
@@ -57,7 +77,7 @@ def wordpress_xml_to_posts_json(input_file, output_file):
     posts = []
     for item in root.findall("./channel/item"):
         post_id = item.find('wp:post_name', ns).text if item.find('wp:post_name', ns) is not None else None
-        title = item.find('title').text if item.find('title') is not None else None
+        title = item.find('title').text.replace("&#039;", "'") if item.find('title') is not None else None
         date = item.find('wp:post_date', ns).text.split(" ")[0] if item.find('wp:post_date', ns) is not None else None
         content = item.find('content:encoded', ns).text if item.find('content:encoded', ns) is not None else None
 
@@ -66,12 +86,11 @@ def wordpress_xml_to_posts_json(input_file, output_file):
 
         # Estrai categorie e imposta il tipo
         categories = [c.text for c in item.findall('category') if c.text is not None and c.attrib["domain"] == "category"]
-        tags = [c.text for c in item.findall('category') if c.text is not None and c.attrib["domain"] == "post_tag"]
+        tags = [c.text for c in item.findall('category') if c.text is not None and not c.text.startswith("[Date]") and c.attrib["domain"] == "post_tag"]
         type_value = "Dream"
         if "Vision" in tags:
             type_value = "Vision"
             tags.remove("Vision")
-        main_flag = "Main" in categories
 
         # Numero estratto dall'id se contiene cifre iniziali
         try:
@@ -84,7 +103,8 @@ def wordpress_xml_to_posts_json(input_file, output_file):
             "number": number_value,
             "title": title,
             "type": type_value,
-            "main": main_flag,
+            "main": "Main" in categories,
+            "showcase": "Showcase" in categories,
             "date": date,
             "content": content_cleaned,
             "tags": tags,

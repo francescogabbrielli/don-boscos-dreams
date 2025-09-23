@@ -17,6 +17,7 @@ const dreamSchema = a.schema({
       explanation: a.string(),
       type: a.string(),
       main: a.boolean(),
+      showcase: a.boolean(),
       date: a.date(),
       tags: a.string().array()
     })

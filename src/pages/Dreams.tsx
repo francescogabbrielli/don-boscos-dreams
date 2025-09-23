@@ -69,7 +69,8 @@ function Dreams() {
         filter: {
           or: filter.types?.map((t: string) => ({type: {eq: t}})), // by type
           main: filter.main ? {eq: true} : undefined // main flag
-        }
+        },
+        limit: 1000
       }).then(
         (items) => {
           const results = items.data.sort(
