@@ -80,7 +80,7 @@ const Home: React.FC = () => {
               <h3 className="mb-0">
                 <a className="text-light" href={"/dream/" + dream.id}>{dream.title}</a>
               </h3>
-              <div className="mb-1 text-light">{dream.date}</div>
+              <div className="mb-1 text-light">{dream.date ? new Date(dream.date).toLocaleDateString("en-US", metadata.dateOptions) : "----"}</div>
               <p className="card-text mb-auto text-light"></p>
            </div>
            </div>
