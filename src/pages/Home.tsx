@@ -14,23 +14,23 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-const client = generateClient<DreamSchema>();
+const client = generateClient<DreamSchema>()
 
 const Home: React.FC = () => {
 
-  const [showcaseDreams, setShowcaseDreams] = React.useState<Array<DreamSchema["Dream"]["type"]>>([]);
+  const [width, setWidth] = React.useState(window.innerWidth)
+
+  const [showcaseDreams, setShowcaseDreams] = React.useState<Array<DreamSchema["Dream"]["type"]>>([])
 
   React.useEffect(() => {
+    window.addEventListener("resize", () => setWidth(window.innerWidth), false)
     client.models.Dream.list({ filter: { showcase: { eq: true } } })
       .then((res) => {
-        console.log(res.data)
-        // Sort dreams by number ascending
-        const sortedDreams = res.data
-          .filter((dream) => dream.number !== undefined && dream.number !== null)
-          .sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
-        setShowcaseDreams(sortedDreams);
-      });
-  }, []);
+        setShowcaseDreams(res.data
+          .filter(dream => dream.number)
+          .sort((a, b) => (a.number ?? 0) - (b.number ?? 0))) // Sort dreams by number ascending
+      })
+  }, [])
 
   return (
   <HelmetProvider>
@@ -56,7 +56,7 @@ const Home: React.FC = () => {
     <div className="col-md-12">
       <h2>Featured</h2>
       <Swiper
-        slidesPerView={2}
+        slidesPerView={width < 720 ? 1 : 2}
         spaceBetween={10}
         speed={1000}
         autoplay={{
@@ -99,6 +99,5 @@ const Home: React.FC = () => {
   </div>
   </HelmetProvider>)
 }
-
 
 export default Home;

@@ -57,6 +57,7 @@ function Dream() {
       const alt = localStorage.getItem("translateLatin") === "1" ? "la" : "en"
       document.querySelectorAll("span[lang='" + alt + "']").forEach(span => span.classList.add("alt"))
       document.querySelectorAll(".content p").forEach(p => p.classList.add("swiper-no-swiping"))
+      document.querySelectorAll(".content li").forEach(li => li.classList.add("swiper-no-swiping"))
   }, [dream])
 
   function checkImage(imageNr?: number) {
