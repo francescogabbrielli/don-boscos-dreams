@@ -23,13 +23,34 @@ const Home: React.FC = () => {
   const [showcaseDreams, setShowcaseDreams] = React.useState<Array<DreamSchema["Dream"]["type"]>>([])
 
   React.useEffect(() => {
-    window.addEventListener("resize", () => setWidth(window.innerWidth), false)
-    client.models.Dream.list({ filter: { showcase: { eq: true } } })
-      .then((res) => {
-        setShowcaseDreams(res.data
+    async function fetchShowcaseDreams() {
+      
+      const items = []
+      let token:string|null|undefined = null
+
+      const cached = localStorage.getItem("{\"main\":false,\"types\":[\"Dream\",\"Vision\"]}")
+        || localStorage.getItem("{\"main\":false,\"types\":[\"Dream\"]}")
+      
+      if (cached) {
+        setShowcaseDreams(JSON.parse(cached).data
+          .filter((dream: DreamSchema["Dream"]["type"]) => dream.showcase))
+      } else {
+        do {
+          const {data: pageItems, nextToken}:{data: Array<DreamSchema["Dream"]["type"]>, nextToken?:string|null|undefined} = await client.models.Dream.list({ 
+            filter: { showcase: { eq: true } },
+            nextToken: token
+          })
+          token = nextToken
+          items.push(...pageItems)
+        } while(token)
+        setShowcaseDreams(items
           .filter(dream => dream.number)
           .sort((a, b) => (a.number ?? 0) - (b.number ?? 0))) // Sort dreams by number ascending
-      })
+      }
+    }
+
+    window.addEventListener("resize", () => setWidth(window.innerWidth), false)
+    fetchShowcaseDreams()
   }, [])
 
   return (

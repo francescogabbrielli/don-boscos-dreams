@@ -22,6 +22,7 @@ type DreamSelection = {
   number: Nullable<number>,
   title: Nullable<string>, 
   date: Nullable<string>,
+  showcase: Nullable<boolean>,
 //    tags: Nullable<Array<string>>
 }
 
@@ -59,7 +60,7 @@ function Dreams() {
         // fetch results one page at a time
         do {
           const {data: pageItems, nextToken}:{data: Array<DreamSelection>, nextToken?:string|null|undefined} = await client.models.Dream.list({
-            selectionSet: ['id', 'number', 'date', 'title'],
+            selectionSet: ['id', 'number', 'date', 'title', 'showcase'],
             filter: {
               or: filter.types?.map((t: string) => ({type: {eq: t}})), // by type
               main: filter.main ? {eq: true} : undefined // main flag
