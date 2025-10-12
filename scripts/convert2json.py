@@ -8,6 +8,13 @@ import re
 from sys import argv
 
 
+class Match:
+    def __init__(self, content): 
+        self.content = content
+    def group(self, n):
+        return self.content
+    
+
 def load_latin():
     """Carica il file di traduzioni latine in un dizionario"""
     try:
@@ -24,7 +31,7 @@ def match_case(original: str, translation: str) -> str:
         return translation.upper()
     elif original.islower():
         return translation.lower()
-    elif original[0].isupper():
+    elif original[0].isupper() and translation[0].islower():
         return translation.capitalize()
     else:
         return translation  # fallback
@@ -55,8 +62,12 @@ def clean_tags(html_content, latin_translations=None):
     def em_replacer(match):
         content = match.group(1)
         for latin, translation in latin_translations:
+            replacer = latin_replacer(translation)
             pattern = re.compile(rf"\b{re.escape(latin)}\b", re.IGNORECASE)
-            content = pattern.sub(latin_replacer(translation), content) if not "<span lang='la'>" in content else content
+            if content == latin:
+                content = replacer(Match(content))
+            elif not "<span lang='la'>" in content:
+                content = pattern.sub(replacer, content)
         return f"<em>{content}</em>"
     
     return re.sub(r"<em>(.*?)</em>", em_replacer, with_latin_tr, flags=re.DOTALL) if latin_translations else with_latin_tr

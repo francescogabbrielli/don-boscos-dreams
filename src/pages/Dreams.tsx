@@ -17,6 +17,15 @@ type Filter = {
   types?: Array<string>
 };
 
+type DreamSelection = {
+  id: Nullable<string>, 
+  number: Nullable<number>,
+  title: Nullable<string>, 
+  date: Nullable<string>,
+//    tags: Nullable<Array<string>>
+}
+
+
 const INITIAL_FILTER:Filter = { main: true, types: [] }
 const DEFAULT_FILTER:Filter = { main: true, types: ["Dream", "Vision"] }
 
@@ -26,13 +35,7 @@ function Dreams() {
 
   const [filter, setFilter] = useState<Filter>(INITIAL_FILTER);
 
-  const [menuitems, setMenuitems] = useState<Array<{
-    id: Nullable<string>, 
-    number: Nullable<number>,
-    title: Nullable<string>, 
-    date: Nullable<string>,
-//    tags: Nullable<Array<string>>
-  }>>([]);
+  const [menuitems, setMenuitems] = useState<Array<DreamSelection>>([]);
 
   const [error, setError] = useState<string>();
 
@@ -47,6 +50,40 @@ function Dreams() {
   // load data
   useEffect(() => {
 
+    async function fetchData() {
+
+        let token:string|null|undefined = null
+        const items = []
+        let i = 0
+
+        // fetch results one page at a time
+        do {
+          const {data: pageItems, nextToken}:{data: Array<DreamSelection>, nextToken?:string|null|undefined} = await client.models.Dream.list({
+            selectionSet: ['id', 'number', 'date', 'title'],
+            filter: {
+              or: filter.types?.map((t: string) => ({type: {eq: t}})), // by type
+              main: filter.main ? {eq: true} : undefined // main flag
+            },
+            nextToken: token
+          })
+          token = nextToken || null
+          items.push(...pageItems)
+          i++
+        } while (token && i < 2) // max 2 pages (safety measure)
+        
+        // collect and sort results
+        if (items.length > 0) {
+          return items.sort(
+            (i1, i2) => i1.number && i2.number ? i1.number - i2.number : i1.date?.localeCompare(i2.date || "") || 0
+          )
+        } else {
+          setError("No items found")
+        }
+
+        return []
+
+    }
+
     if (filter === INITIAL_FILTER)
       return
     
@@ -59,31 +96,14 @@ function Dreams() {
     // retrieve cached data and check if still valid (1 day)...
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "{}")
     if (cached?.time && (Date.now() - cached.time) < ONE_DAY && Array.isArray(cached.data)) {
-      
       setMenuitems(cached.data)
-    
     // ...otherwise query from DB
     } else {
-      client.models.Dream.list({
-        selectionSet: ['id', 'number', 'date', 'title'], 
-        filter: {
-          or: filter.types?.map((t: string) => ({type: {eq: t}})), // by type
-          main: filter.main ? {eq: true} : undefined // main flag
-        },
-        limit: 1000
-      }).then(
-        (items) => {
-          const results = items.data.sort(
-            (i1, i2) => i1.number && i2.number ? i1.number - i2.number : i1.date?.localeCompare(i2.date || "") || 0
-          )
-          if (results?.length > 0) {
-            localStorage.setItem(cacheKey, JSON.stringify({data: results, time: Date.now()}))
-            setMenuitems(results)
-          } else {
-            setError("No items found")
-          }
-        }
-      ).catch(err => setError(err) )
+      fetchData().then(data => {
+        setMenuitems(data)
+        if (data.length > 0)
+          localStorage.setItem(cacheKey, JSON.stringify({data: data, time: Date.now()}))
+      }).catch(err => setError(err))
     }
   }, [filter]);
 

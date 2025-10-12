@@ -35,8 +35,15 @@ em {
   font-size: 0.95em;
 }
 
+strong {
+  em {
+    font-size: 1.05em;
+  }
+}
+
 span[lang] {
   color: $secondary;
+  font-size: 1.05em;
 }
 
 span[lang].alt {
