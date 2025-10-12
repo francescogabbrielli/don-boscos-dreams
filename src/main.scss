@@ -96,3 +96,8 @@ span[lang]:not(.alt):active + span[lang].alt, span[lang].alt + span[lang]:not(.a
 .content {
   margin: 1em 0;
 }
+
+.badge:hover {
+  cursor: pointer;
+  filter: brightness(150%);
+}

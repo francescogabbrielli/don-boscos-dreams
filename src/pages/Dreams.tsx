@@ -14,8 +14,13 @@ type Nullable<T> = T | null;
 
 type Filter = {
   main?: boolean,
-  types?: Array<string>
+  types?: Array<string>,
 };
+
+type AdditionalFilter = {
+  tags?: Array<string>,
+  year?: number
+}
 
 type DreamSelection = {
   id: Nullable<string>, 
@@ -23,7 +28,7 @@ type DreamSelection = {
   title: Nullable<string>, 
   date: Nullable<string>,
   showcase: Nullable<boolean>,
-//    tags: Nullable<Array<string>>
+  tags: Nullable<Array<Nullable<string>>>
 }
 
 
@@ -36,7 +41,11 @@ function Dreams() {
 
   const [filter, setFilter] = useState<Filter>(INITIAL_FILTER);
 
+  const [additionalFilter, setAdditionalFilter] = useState<AdditionalFilter>({});
+
   const [menuitems, setMenuitems] = useState<Array<DreamSelection>>([]);
+
+  const [tags, setTags] = useState<Array<{name: string, count: number}>>([]);
 
   const [error, setError] = useState<string>();
 
@@ -60,7 +69,7 @@ function Dreams() {
         // fetch results one page at a time
         do {
           const {data: pageItems, nextToken}:{data: Array<DreamSelection>, nextToken?:string|null|undefined} = await client.models.Dream.list({
-            selectionSet: ['id', 'number', 'date', 'title', 'showcase'],
+            selectionSet: ['id', 'number', 'date', 'title', 'showcase', 'tags'],
             filter: {
               or: filter.types?.map((t: string) => ({type: {eq: t}})), // by type
               main: filter.main ? {eq: true} : undefined // main flag
@@ -93,6 +102,7 @@ function Dreams() {
 
     const cacheKey = JSON.stringify(filter)
     localStorage.setItem("searchFilter", cacheKey)
+    setAdditionalFilter({})
 
     // retrieve cached data and check if still valid (1 day)...
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "{}")
@@ -106,7 +116,20 @@ function Dreams() {
           localStorage.setItem(cacheKey, JSON.stringify({data: data, time: Date.now()}))
       }).catch(err => setError(err))
     }
-  }, [filter]);
+  }, [filter])
+
+  useEffect(() => {
+    // extract additional filters from current results
+    const temp:Map<string, number> = new Map<string, number>()
+    menuitems.forEach(item => 
+      item.tags?.forEach(tag => {
+        if (tag) {
+          temp.set(tag, (temp.get(tag) || 0) + 1)
+        }
+      })
+    )
+    setTags([...temp].sort().map(t => ({name: t[0], count: t[1]})))
+  }, [menuitems])
 
   function filterMain() {
     setFilter((prev) => ({...prev, main: !filter.main}));
@@ -114,6 +137,18 @@ function Dreams() {
 
   function filterTypes(event: ChangeEvent<HTMLInputElement>) {
     setFilter((prev) => ({...prev, types: event.target.value.split(",")}))
+  }
+
+  function filterTag(tagName: string) {
+    return () => {
+      setAdditionalFilter((prev) => {
+        if (prev.tags?.includes(tagName)) {
+          return {...prev, tags: prev.tags.filter(t => t !== tagName)}
+        } else {
+          return {...prev, tags: prev.tags ? [...prev.tags, tagName] : [tagName]}
+        }
+      })
+    }
   }
 
   return (
@@ -162,6 +197,19 @@ function Dreams() {
               onChange={filterTypes}/>
           </div>
         </div>
+        <div className="hstack">
+          <h6 className="bg-light">Tag</h6>
+          &nbsp;
+          <div className="m-2">
+            {tags.map(
+              tag => (
+                <span className={"badge me-1 " + (additionalFilter.tags?.includes(tag.name) ? "bg-primary" : "bg-secondary")} key={tag.name} onClick={filterTag(tag.name)}>
+                  {tag.name} <small>({tag.count})</small>
+                </span>
+              ))
+            }
+          </div>
+        </div>
       </div>
       <br></br>
       <h4>List</h4>
@@ -175,13 +223,23 @@ function Dreams() {
       </div>
       <div id="menu" className="container-fluid border rounded" style={{visibility: menuitems.length ? "visible" : "hidden"}}>
         <div className="row row-cols-auto" style={{minWidth: "200px"}}>
-        {menuitems.map(menuitem => (
-          <div className="col bg-light m-1" key={menuitem.id}>
-            {menuitem.number}. <strong><a href={"/dream/" + menuitem.id}>{menuitem.title}</a></strong>
-            <br/> 
-            [ <em>{new Date(Date.parse(menuitem.date || '0')).toLocaleDateString()}</em> ]
-          </div>
-        ))}
+        {menuitems
+          .filter(menuitem => {
+            if (additionalFilter.tags && additionalFilter.tags.length > 0) {
+              if (!menuitem.tags) return false
+              for (const tag of additionalFilter.tags) {
+                if (!menuitem.tags.includes(tag)) return false
+              }
+            }
+            return true
+          })
+          .map(menuitem => (
+            <div className="col bg-light m-1" key={menuitem.id}>
+              {menuitem.number}. <strong><a href={"/dream/" + menuitem.id}>{menuitem.title}</a></strong>
+              <br/> 
+              [ <em>{new Date(Date.parse(menuitem.date || '0')).toLocaleDateString()}</em> ]
+            </div>
+          ))}
         </div>
       </div>
 
