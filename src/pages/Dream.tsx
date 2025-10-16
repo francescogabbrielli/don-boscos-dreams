@@ -3,8 +3,8 @@
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { generateClient } from "aws-amplify/api";
 import { DreamSchema } from "../../amplify/data/resource";
-import { useEffect, useState } from "react";
-import { metadata } from "../meta";
+import { useContext, useEffect, useState } from "react";
+import { LatinContext, metadata } from "../meta";
 import { useParams } from "react-router-dom";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -38,6 +38,8 @@ function Dream() {
 
   const [image, setImage] = useState<HTMLImageElement>();
 
+  const translate = useContext(LatinContext)
+
   useEffect(() => {
     if (swiper) {
       swiper.slideTo(currentPage - 1);
@@ -54,11 +56,12 @@ function Dream() {
   }, [id])
 
   useEffect(() => {
-      const alt = localStorage.getItem("translateLatin") === "1" ? "la" : "en"
-      document.querySelectorAll("span[lang='" + alt + "']").forEach(span => span.classList.add("alt"))
+    console.log("TRANSLATE", translate.latin)
+      document.querySelectorAll("span[lang='" + (translate.latin ? "en" : "la") + "']").forEach(span => {console.log(span);span.classList.remove("alt")})
+      document.querySelectorAll("span[lang='" + (translate.latin ? "la" : "en") + "']").forEach(span => {console.log(span);span.classList.add("alt")})
       document.querySelectorAll(".content p").forEach(p => p.classList.add("swiper-no-swiping"))
       document.querySelectorAll(".content li").forEach(li => li.classList.add("swiper-no-swiping"))
-  }, [dream])
+  }, [translate.latin, pages])
 
   function checkImage(imageNr?: number) {
     if (!imageNr) return;

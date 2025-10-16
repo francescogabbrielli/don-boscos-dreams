@@ -212,7 +212,7 @@ function Dreams() {
         </div>
       </div>
       <br></br>
-      <h4>List</h4>
+      <h4>Dreams</h4>
       <div style={{display: menuitems.length || error ? "none": "block"}}>
         <div className="spinner-grow big-spinner" role="status">
           <span className="visually-hidden">Loading...</span>

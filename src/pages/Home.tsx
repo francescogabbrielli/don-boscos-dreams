@@ -16,6 +16,8 @@ import 'swiper/css/navigation';
 
 const client = generateClient<DreamSchema>()
 
+const ONE_WEEK:number = 7 * 24 * 60 * 60 * 1000;
+
 const Home: React.FC = () => {
 
   const [width, setWidth] = React.useState(window.innerWidth)
@@ -28,11 +30,11 @@ const Home: React.FC = () => {
       const items = []
       let token:string|null|undefined = null
 
-      const cached = localStorage.getItem("{\"main\":false,\"types\":[\"Dream\",\"Vision\"]}")
-        || localStorage.getItem("{\"main\":false,\"types\":[\"Dream\"]}")
+      const cached = JSON.parse(localStorage.getItem("{\"main\":false,\"types\":[\"Dream\",\"Vision\"]}")
+        || localStorage.getItem("{\"main\":false,\"types\":[\"Dream\"]}") || "{}")
       
-      if (cached) {
-        setShowcaseDreams(JSON.parse(cached).data
+      if (cached?.time && (Date.now() - cached.time) < ONE_WEEK && Array.isArray(cached.data)) {
+        setShowcaseDreams(cached.data
           .filter((dream: DreamSchema["Dream"]["type"]) => dream.showcase))
       } else {
         do {

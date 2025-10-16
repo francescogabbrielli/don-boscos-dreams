@@ -5,6 +5,10 @@ $secondary: darkblue;
   
 @import "../node_modules/bootstrap/scss/bootstrap";
 
+body {
+  font-family: 'Figtree', Tahoma, 'Geneva', Verdana, sans-serif;
+}
+
 p {
   text-align: justify;
 }
@@ -95,6 +99,17 @@ span[lang]:not(.alt):active + span[lang].alt, span[lang].alt + span[lang]:not(.a
 
 .content {
   margin: 1em 0;
+}
+
+.badge {
+  background-color: $secondary;
+  color: lightgray;
+  font-size: 0.7em;
+  font-weight: normal;
+  margin-right: 0.25em;
+  margin-bottom: 0.25em;
+  user-select: none;
+  transition: filter 0.3s ease;
 }
 
 .badge:hover {

@@ -1,11 +1,11 @@
 // pages/Settings.tsx
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { metadata } from "../meta";
+import { LatinContext, metadata } from "../meta";
 
 const client = generateClient<DreamSchema>();
 
@@ -13,13 +13,11 @@ const Settings: React.FC = () => {
 
   const [done, setDone] = useState(true);
 
-  useEffect(() => {
-    (document.getElementById("latinTranslate") as HTMLInputElement).checked = localStorage.getItem("translateLatin") === "1";
-  }, [])
+  const translate = useContext(LatinContext)
 
-  function handleTranslateChange(event: React.ChangeEvent<HTMLInputElement>) {
-    localStorage.setItem("translateLatin", event.target.checked ? "1" : "0");
-  }
+  useEffect(() => {
+    document.dispatchEvent(new Event("translateLatinChanged"));
+  }, [])
 
   function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     // Prevent the browser from reloading the page
@@ -46,8 +44,8 @@ const Settings: React.FC = () => {
     <h1>Settings</h1>
     
     <div className="form-check form-switch">
-      <input className="form-check-input" type="checkbox" role="switch" id="latinTranslate" onChange={handleTranslateChange}/>
-      <label className="form-check-label" htmlFor="latinTranslate">Auto-translate Latin</label>
+      <input className="form-check-input" type="checkbox" role="switch" onChange={translate.toggleLatin} checked={translate.latin}/>
+      <label className="form-check-label" htmlFor="latinTranslate">Auto-translate all Latin texts to English</label>
     </div>
     <hr/>
     <i><b>ONLY ADMIN</b>: The following allows to import a list of dreams in JSON format (array of objects).</i>
