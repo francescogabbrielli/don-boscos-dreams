@@ -1,6 +1,6 @@
 // components/Layout.tsx
 import { useEffect, useState } from "react";
-import { LatinContext } from "../meta.tsx";
+import { SettingsContext } from "../meta.tsx";
 import Header from "./Header.tsx";
 import Sidebar from "./Sidebar.tsx";
 import { Outlet } from "react-router-dom";
@@ -23,7 +23,7 @@ function Layout() {
     localStorage.setItem("translateLatin", state.latin ? "1" : "0")
   }, [state.latin])
 
-  return(<LatinContext.Provider value={state}>
+  return(<SettingsContext.Provider value={state}>
     <Header />
     <Sidebar />
     <main id="mainContent" className="pt-5">
@@ -39,7 +39,7 @@ function Layout() {
         }
       }
     `}</style>
-  </LatinContext.Provider>)
+  </SettingsContext.Provider>)
 }
 
 export default Layout;

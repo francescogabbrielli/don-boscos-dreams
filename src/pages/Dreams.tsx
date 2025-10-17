@@ -198,16 +198,21 @@ function Dreams() {
           </div>
         </div>
         <div className="hstack">
-          <h6 className="bg-light">Tag</h6>
+          <h6 className="bg-light">Tags</h6> 
           &nbsp;
-          <div className="m-2">
-            {tags.map(
-              tag => (
-                <span className={"badge me-1 " + (additionalFilter.tags?.includes(tag.name) ? "bg-primary" : "bg-secondary")} key={tag.name} onClick={filterTag(tag.name)}>
-                  {tag.name} <small>({tag.count})</small>
-                </span>
-              ))
-            }
+          <a className="btn btn-sm btn-secondary" 
+            data-bs-toggle="collapse" href="#tagSpacer" role="button" 
+            aria-expanded="false" aria-controls="tagSpacer"><small>[]</small></a>
+          <div className="collapse" id="tagSpacer">
+            <div className="m-2">
+              {tags.map(
+                tag => (
+                  <span className={"badge me-1 " + (additionalFilter.tags?.includes(tag.name) ? "bg-primary" : "bg-secondary")} key={tag.name} onClick={filterTag(tag.name)}>
+                    {tag.name} <small>({tag.count})</small>
+                  </span>
+                ))
+              }
+            </div>
           </div>
         </div>
       </div>

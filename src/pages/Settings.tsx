@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from "react";
 import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { LatinContext, metadata } from "../meta";
+import { SettingsContext, metadata } from "../meta";
 
 const client = generateClient<DreamSchema>();
 
@@ -13,7 +13,7 @@ const Settings: React.FC = () => {
 
   const [done, setDone] = useState(true);
 
-  const translate = useContext(LatinContext)
+  const translate = useContext(SettingsContext)
 
   useEffect(() => {
     document.dispatchEvent(new Event("translateLatinChanged"));

@@ -5,6 +5,12 @@ $secondary: darkblue;
   
 @import "../node_modules/bootstrap/scss/bootstrap";
 
+@property --t {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0.6;
+}
+
 body {
   font-family: 'Figtree', Tahoma, 'Geneva', Verdana, sans-serif;
 }
@@ -13,25 +19,18 @@ p {
   text-align: justify;
 }
 
-@property --t {
-  syntax: '<number>';
-  inherits: false;
-  initial-value: 0.6;
-}
-
 .card {
   transition: --t 0.3s ease;
   height: -webkit-fill-available;
-}
 
-.card:hover, .card:focus, .card:active {
-  --t: 0.1;
-}
+  &:hover, &:focus, &:active {
+    --t: 0.1;
+  }
 
-.card .text-light {
-  text-shadow: 1px 1px black;
+  .text-light {
+    text-shadow: 1px 1px black;
+  }
 }
-
 
 em {
   color: $primary ;
@@ -48,20 +47,21 @@ strong {
 span[lang] {
   color: $secondary;
   font-size: 1.05em;
-}
+  
+  &.alt {
+    display: none;
+    outline: none;
+    cursor: pointer;
+  }
 
-span[lang].alt {
-  display: none;
-  outline: none;
-  cursor: pointer;
-}
+  &:not(.alt):active {
+    display: none;
+  }
 
-span[lang]:not(.alt):active {
-  display: none;
-}
+  &:not(.alt):active + &.alt, &.alt + &:not(.alt):active {
+    display: inline;
+  }
 
-span[lang]:not(.alt):active + span[lang].alt, span[lang].alt + span[lang]:not(.alt):active {
-  display: inline;
 }
 
 .nav-link.active, .nav-link.active:focus {
@@ -90,15 +90,15 @@ span[lang]:not(.alt):active + span[lang].alt, span[lang].alt + span[lang]:not(.a
   cursor: pointer;
   margin: 0 1px;
   user-select: none;
-}
 
-.dot.active {
-  background-color: $primary;
-  font-weight: bold;
+  &.active{
+    background-color: $primary;
+    font-weight: bold;
+  }
 }
 
 .content {
-  margin: 1em 0;
+  margin: 1em 2px;
 }
 
 .badge {
@@ -109,10 +109,9 @@ span[lang]:not(.alt):active + span[lang].alt, span[lang].alt + span[lang]:not(.a
   margin-right: 0.25em;
   margin-bottom: 0.25em;
   user-select: none;
-  transition: filter 0.3s ease;
-}
 
-.badge:hover {
-  cursor: pointer;
-  filter: brightness(150%);
+  &:hover {
+    cursor: pointer;
+    filter: brightness(150%);
+  }
 }

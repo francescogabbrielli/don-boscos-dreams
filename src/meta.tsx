@@ -8,7 +8,7 @@ export const metadata: {
   dateOptions: {day: "numeric", month: "long", year: "numeric"}
 } 
 
-export const LatinContext = createContext({
+export const SettingsContext = createContext({
   latin: localStorage.getItem("translateLatin") === "1",
   toggleLatin: () => {}
 })

@@ -4,7 +4,7 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 import { generateClient } from "aws-amplify/api";
 import { DreamSchema } from "../../amplify/data/resource";
 import { useContext, useEffect, useState } from "react";
-import { LatinContext, metadata } from "../meta";
+import { SettingsContext, metadata } from "../meta";
 import { useParams } from "react-router-dom";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -38,7 +38,7 @@ function Dream() {
 
   const [image, setImage] = useState<HTMLImageElement>();
 
-  const translate = useContext(LatinContext)
+  const translate = useContext(SettingsContext)
 
   useEffect(() => {
     if (swiper) {
