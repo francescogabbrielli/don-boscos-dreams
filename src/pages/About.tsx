@@ -61,7 +61,7 @@ Great builder of churches, including the Basilica of St. John the Evangelist, th
     </ul>
 
     <h4>Latin translations</h4>
-    <p>Almost all latin in the text is provided with the translation, that can be shown by clicking/tapping (and keeping it) on the text. Another option is to automatically translate all latin text (see the <a href="/settings">Settings</a> page)</p>
+    <p>Almost all latin in the text is provided with the translation, that can be shown by clicking/tapping (and keeping it) on the text. Another option is to automatically translate all latin text (see sidebar)</p>
 
   </div>
   </HelmetProvider>
