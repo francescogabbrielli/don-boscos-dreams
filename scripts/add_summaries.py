@@ -1,59 +1,50 @@
 import json
-import re
-from pathlib import Path
+import google.generativeai as genai
+import time
 
-IN = Path(__file__).with_name("donboscodreams.json")
-OUT = Path(__file__).with_name("donboscodreams.with_summaries.json")
-bak = Path(__file__).with_name("donboscodreams.backup.json")
+# 1. Configurazione API
+genai.configure(api_key="AIzaSyA9NxH8kV2Pe6yKtKTu3faZofUi4uxPKVA")
+model = genai.GenerativeModel('models/gemini-2.0-flash')
 
-def strip_html(s: str) -> str:
-    s = re.sub(r"<[^>]+>", " ", s)
-    s = re.sub(r"\s+", " ", s).strip()
-    return s
-
-def first_sentence(text: str, max_len: int = 240) -> str:
+def summarize_text(text):
     if not text:
         return ""
-    # split on terminal punctuation (keep the punctuation)
-    parts = re.split(r'(?<=[\.!\?])\s+', text)
-    candidate = parts[0].strip() if parts else text.strip()
-    if len(candidate) > max_len:
-        candidate = candidate[:max_len].rstrip() + "..."
-    return candidate
+    
+    prompt = f"Summarize the following story in one concise sentence, keeping the focus on the spiritual meaning or main message: {text}"
+    
+    try:
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        print(f"Errore durante la generazione: {e}")
+        return ""
 
-data = json.loads(IN.read_text(encoding="utf-8"))
+# 2. Caricamento del file JSON
+file_path = 'donboscodreams.json'
+with open(file_path, 'r', encoding='utf-8') as f:
+    data = json.load(f)
 
-# backup original
-bak.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"Inizio elaborazione di {len(data)} elementi...")
 
-for item in data:
-    # skip non-dict items
-    if not isinstance(item, dict):
-        continue
+# 3. Ciclo di aggiornamento
+for index, item in enumerate(data):
+    content_html = item.get('content', '')
+    
+    # Rimuoviamo i tag HTML base per pulire il testo
+    import re
+    clean_text = re.sub('<[^<]+?>', '', content_html)
+    
+    print(f"[{index + 1}/{len(data)}] Riassumendo: {item.get('title')}...")
+    
+    # Aggiungiamo il nuovo campo
+    item['summary'] = summarize_text(clean_text)
+    
+    # Piccola pausa per non superare i limiti di quota della versione free
+    time.sleep(15) 
 
-    # prefer content, then explanation, then title
-    source = None
-    for k in ("content", "explanation", "title"):
-        v = item.get(k)
-        if isinstance(v, str) and v.strip():
-            source = v
-            break
+# 4. Salvataggio del nuovo file
+output_path = 'donboscodreams_with_summary.json'
+with open(output_path, 'w', encoding='utf-8') as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
 
-    if not source:
-        # leave empty summary for items with no usable text
-        item["summary"] = ""
-        continue
-
-    text = strip_html(source)
-    summary = first_sentence(text)
-    # ensure summary is short and descriptive; if too short try to extend to two sentences
-    if len(summary) < 40 and len(text) > len(summary):
-        # take up to two sentences
-        parts = re.split(r'(?<=[\.!\?])\s+', text)
-        summary = " ".join(parts[:2]) if len(parts) >= 2 else parts[0]
-        if len(summary) > 240:
-            summary = summary[:240].rstrip() + "..."
-    item["summary"] = summary
-
-OUT.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-print(f"Wrote {len(data)} items with summaries to {OUT} (backup saved to {bak})")
+print(f"\nFatto! Il file aggiornato è stato salvato come: {output_path}")
