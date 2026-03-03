@@ -1,11 +1,12 @@
 import json
+from os import environ
 import re
 import time
 import google.generativeai as genai
 from google.api_core import exceptions
 
 # 1. Configurazione API
-genai.configure(api_key="AIzaSyA9NxH8kV2Pe6yKtKTu3faZofUi4uxPKVA")
+genai.configure(api_key=environ.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel('models/gemini-2.5-flash')
 
 def clean_html(raw_html):

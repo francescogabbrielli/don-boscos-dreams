@@ -1,7 +1,7 @@
 import google.genai as genai
-import os
+from os import environ
 
-genai.configure(api_key="AIzaSyA9NxH8kV2Pe6yKtKTu3faZofUi4uxPKVA")
+genai.configure(api_key=environ.get("GEMINI_API_KEY"))
 
 print("--- Modelli disponibili per il tuo account ---")
 try:
