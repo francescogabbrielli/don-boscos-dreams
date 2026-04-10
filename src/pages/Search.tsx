@@ -1,4 +1,4 @@
-// pages/Dreams.tsx
+// pages/Search.tsx
 
 import { ChangeEvent, useEffect, useState } from "react";
 
@@ -13,11 +13,9 @@ const client = generateClient<DreamSchema>();
 type Nullable<T> = T | null;
 
 type Filter = {
+  init: boolean,
   main?: boolean,
   types?: Array<string>,
-};
-
-type AdditionalFilter = {
   tags?: Array<string>,
   year?: number
 }
@@ -27,23 +25,26 @@ type DreamSelection = {
   number: Nullable<number>,
   title: Nullable<string>, 
   date: Nullable<string>,
+  main: Nullable<boolean>,
+  type: Nullable<string>,
   showcase: Nullable<boolean>,
   tags: Nullable<Array<Nullable<string>>>
 }
 
 
-const INITIAL_FILTER:Filter = { main: true, types: [] }
-const DEFAULT_FILTER:Filter = { main: true, types: ["Dream", "Vision"] }
+const ITEMS_KEY = "items"
+const FILTER_KEY = "searchFilter"
+const INITIAL_FILTER:Filter = { init: false, main: true, types: ["Dream", "Vision"] }
 
 const ONE_DAY:number = 24 * 60 * 60 * 1000;
 
-function Dreams() {
+function Search() {
 
   const [filter, setFilter] = useState<Filter>(INITIAL_FILTER);
 
-  const [additionalFilter, setAdditionalFilter] = useState<AdditionalFilter>({});
-
   const [menuitems, setMenuitems] = useState<Array<DreamSelection>>([]);
+
+  const [filtered, setFiltered] = useState<Array<DreamSelection>>([]);
 
   const [tags, setTags] = useState<Array<{name: string, count: number}>>([]);
 
@@ -52,10 +53,10 @@ function Dreams() {
   const location = useLocation();
 
   // load filter from cached value
-  useEffect(() => {
-    const f = localStorage.getItem("searchFilter")
-    setFilter(f ? JSON.parse(f) : DEFAULT_FILTER)
-  }, [location.pathname])
+  // useEffect(() => {
+  //   const f = localStorage.getItem("searchFilter")
+  //   setFilter(f ? JSON.parse(f) : DEFAULT_FILTER)
+  // }, [location.pathname])
 
   // load data
   useEffect(() => {
@@ -69,11 +70,11 @@ function Dreams() {
         // fetch results one page at a time
         do {
           const {data: pageItems, nextToken}:{data: Array<DreamSelection>, nextToken?:string|null|undefined} = await client.models.Dream.list({
-            selectionSet: ['id', 'number', 'date', 'title', 'showcase', 'tags'],
-            filter: {
-              or: filter.types?.map((t: string) => ({type: {eq: t}})), // by type
-              main: filter.main ? {eq: true} : undefined // main flag
-            },
+            selectionSet: ['id', 'number', 'date', 'title', 'main', 'type', 'showcase', 'tags'],
+            // filter: {
+            //   or: filter.types?.map((t: string) => ({type: {eq: t}})), // by type
+            //   main: filter.main ? {eq: true} : undefined // main flag
+            // },
             nextToken: token
           })
           token = nextToken || null
@@ -94,18 +95,20 @@ function Dreams() {
 
     }
 
-    if (filter === INITIAL_FILTER)
-      return
+    // if (filter === INITIAL_FILTER)
+    //   return
     
     setMenuitems([])
     setError(undefined)
 
-    const cacheKey = JSON.stringify(filter)
-    localStorage.setItem("searchFilter", cacheKey)
-    setAdditionalFilter({})
+    // const cacheKey = JSON.stringify(filter)
+    // localStorage.setItem("searchFilter", cacheKey)
+    // setAdditionalFilter({})
+    const f = localStorage.getItem(FILTER_KEY)
+    setFilter(f ? JSON.parse(f) : INITIAL_FILTER)
 
     // retrieve cached data and check if still valid (1 day)...
-    const cached = JSON.parse(localStorage.getItem(cacheKey) || "{}")
+    const cached = JSON.parse(localStorage.getItem(ITEMS_KEY) || "{}")
     if (cached?.time && (Date.now() - cached.time) < ONE_DAY && Array.isArray(cached.data)) {
       setMenuitems(cached.data)
     // ...otherwise query from DB
@@ -113,15 +116,37 @@ function Dreams() {
       fetchData().then(data => {
         setMenuitems(data)
         if (data.length > 0)
-          localStorage.setItem(cacheKey, JSON.stringify({data: data, time: Date.now()}))
+          localStorage.setItem(ITEMS_KEY, JSON.stringify({data: data, time: Date.now()}))
       }).catch(err => setError(err))
     }
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!filter.init) return
+    localStorage.setItem(FILTER_KEY, JSON.stringify(filter))
   }, [filter])
+
+  // apply main filters
+  useEffect(() => {
+    setFiltered(menuitems
+      .filter(item => !filter.main || item.main)
+      .filter(item => !filter.types || filter.types.includes(item.type || ""))
+      .filter(item => {
+            if (filter.tags && filter.tags.length > 0) {
+              if (!item.tags) return false
+              for (const tag of filter.tags) {
+                if (!item.tags.includes(tag)) return false
+              }
+            }
+            return true
+          })
+    )
+  }, [menuitems, filter])
 
   useEffect(() => {
     // extract additional filters from current results
     const temp:Map<string, number> = new Map<string, number>()
-    menuitems.forEach(item => 
+    filtered.forEach(item => 
       item.tags?.forEach(tag => {
         if (tag) {
           temp.set(tag, (temp.get(tag) || 0) + 1)
@@ -129,19 +154,19 @@ function Dreams() {
       })
     )
     setTags([...temp].sort().map(t => ({name: t[0], count: t[1]})))
-  }, [menuitems])
+  }, [filtered])
 
   function filterMain() {
-    setFilter((prev) => ({...prev, main: !filter.main}));
+    setFilter((prev) => ({...prev, init: true, main: !filter.main}));
   }
 
   function filterTypes(event: ChangeEvent<HTMLInputElement>) {
-    setFilter((prev) => ({...prev, types: event.target.value.split(",")}))
+    setFilter((prev) => ({...prev, init: true, types: event.target.value.split(",")}))
   }
 
   function filterTag(tagName: string) {
     return () => {
-      setAdditionalFilter((prev) => {
+      setFilter((prev) => {
         if (prev.tags?.includes(tagName)) {
           return {...prev, tags: prev.tags.filter(t => t !== tagName)}
         } else {
@@ -207,7 +232,7 @@ function Dreams() {
             <div className="m-2">
               {tags.map(
                 tag => (
-                  <span className={"badge me-1 " + (additionalFilter.tags?.includes(tag.name) ? "bg-primary" : "bg-secondary")} key={tag.name} onClick={filterTag(tag.name)}>
+                  <span className={"badge me-1 " + (filter.tags?.includes(tag.name) ? "bg-primary" : "bg-secondary")} key={tag.name} onClick={filterTag(tag.name)}>
                     {tag.name} <small>({tag.count})</small>
                   </span>
                 ))
@@ -228,16 +253,7 @@ function Dreams() {
       </div>
       <div id="menu" className="container-fluid border rounded" style={{visibility: menuitems.length ? "visible" : "hidden"}}>
         <div className="row row-cols-auto" style={{minWidth: "200px"}}>
-        {menuitems
-          .filter(menuitem => {
-            if (additionalFilter.tags && additionalFilter.tags.length > 0) {
-              if (!menuitem.tags) return false
-              for (const tag of additionalFilter.tags) {
-                if (!menuitem.tags.includes(tag)) return false
-              }
-            }
-            return true
-          })
+        {filtered
           .map(menuitem => (
             <div className="col bg-light m-1" key={menuitem.id}>
               {menuitem.number}. <strong><a href={"/dream/" + menuitem.id}>{menuitem.title}</a></strong>
@@ -253,4 +269,4 @@ function Dreams() {
     )
 }
 
-export default Dreams;
+export default Search;

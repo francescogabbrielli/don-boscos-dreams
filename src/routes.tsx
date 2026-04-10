@@ -10,13 +10,13 @@ export interface RouteConfig {
 
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Dreams from "./pages/Dreams";
+import Search from "./pages/Search";
 import Dream from "./pages/Dream";
 import Settings from "./pages/Settings";
 
 export const routes: RouteConfig[] = [
   { path: "/", label: "Home", icon: "house-door", element: <Home />},
-  { path: "/dreams", label: "Search", icon: "search", element: <Dreams /> },
+  { path: "/dreams", label: "Search", icon: "search", element: <Search /> },
   { path: "/dream/:id", label: "Dream", icon: "cloud", element: <Dream /> },
   { path: "/about", label: "About", icon: "info", element: <About /> },
   { path: "/settings", label: "Settings", icon: "gear", element: <Settings /> },
