@@ -1,6 +1,6 @@
 // pages/Search.tsx
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 import type { DreamSchema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
@@ -48,15 +48,13 @@ function Search() {
 
   const [tags, setTags] = useState<Array<{name: string, count: number}>>([]);
 
+  const [years, setYears] = useState<Array<number>>([]);
+
   const [error, setError] = useState<string>();
 
   const location = useLocation();
 
-  // load filter from cached value
-  // useEffect(() => {
-  //   const f = localStorage.getItem("searchFilter")
-  //   setFilter(f ? JSON.parse(f) : DEFAULT_FILTER)
-  // }, [location.pathname])
+  const tagSpacer = useRef<HTMLDivElement>(null)
 
   // load data
   useEffect(() => {
@@ -71,10 +69,6 @@ function Search() {
         do {
           const {data: pageItems, nextToken}:{data: Array<DreamSelection>, nextToken?:string|null|undefined} = await client.models.Dream.list({
             selectionSet: ['id', 'number', 'date', 'title', 'main', 'type', 'showcase', 'tags'],
-            // filter: {
-            //   or: filter.types?.map((t: string) => ({type: {eq: t}})), // by type
-            //   main: filter.main ? {eq: true} : undefined // main flag
-            // },
             nextToken: token
           })
           token = nextToken || null
@@ -95,15 +89,9 @@ function Search() {
 
     }
 
-    // if (filter === INITIAL_FILTER)
-    //   return
-    
+    // initialize state and try to load filter and data from localStorage
     setMenuitems([])
     setError(undefined)
-
-    // const cacheKey = JSON.stringify(filter)
-    // localStorage.setItem("searchFilter", cacheKey)
-    // setAdditionalFilter({})
     const f = localStorage.getItem(FILTER_KEY)
     setFilter(f ? JSON.parse(f) : INITIAL_FILTER)
 
@@ -126,11 +114,16 @@ function Search() {
     localStorage.setItem(FILTER_KEY, JSON.stringify(filter))
   }, [filter])
 
-  // apply main filters
+  // apply filters
   useEffect(() => {
+    // show tag filter spacer if any tag filter is active
+    filter.tags && filter.tags.length > 0 && tagSpacer.current?.classList.add("show")
+
+    //apply filters to menu items
     setFiltered(menuitems
       .filter(item => !filter.main || item.main)
       .filter(item => !filter.types || filter.types.includes(item.type || ""))
+      .filter(item => !filter.year || (item.date ? new Date(Date.parse(item.date)).getFullYear() === filter.year : false))
       .filter(item => {
             if (filter.tags && filter.tags.length > 0) {
               if (!item.tags) return false
@@ -144,16 +137,20 @@ function Search() {
   }, [menuitems, filter])
 
   useEffect(() => {
-    // extract additional filters from current results
-    const temp:Map<string, number> = new Map<string, number>()
-    filtered.forEach(item => 
-      item.tags?.forEach(tag => {
-        if (tag) {
-          temp.set(tag, (temp.get(tag) || 0) + 1)
-        }
-      })
+    // update filters based on current filtered results
+    const tagsMap:Map<string, number> = new Map<string, number>()
+    const yearSet:Set<number> = new Set<number>()
+    filtered.forEach(item => {
+        item.tags?.forEach(tag => {
+          if (tag) {
+            tagsMap.set(tag, (tagsMap.get(tag) || 0) + 1)
+          }
+        })
+        item.date && yearSet.add(new Date(Date.parse(item.date)).getFullYear())
+      }
     )
-    setTags([...temp].sort().map(t => ({name: t[0], count: t[1]})))
+    setTags([...tagsMap].sort().map(t => ({name: t[0], count: t[1]})))
+    setYears([...yearSet].sort())
   }, [filtered])
 
   function filterMain() {
@@ -175,6 +172,11 @@ function Search() {
       })
     }
   }
+
+  function filterYear(event: ChangeEvent<HTMLSelectElement>) {
+    const value = event.target.value
+    setFilter((prev) => ({...prev, init: true, year: value ? parseInt(value) : undefined}))
+  } 
 
   return (
     <HelmetProvider>
@@ -223,12 +225,22 @@ function Search() {
           </div>
         </div>
         <div className="hstack">
+          <h6 className="bg-light text-nowrap">Year</h6>
+          &nbsp;
+          <div className="form-check m-2">
+            <select className="form-select" id="yearFilter" onChange={filterYear}>
+              <option selected></option>
+              {years.map(year => <option value={year} key={year}>{year}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="hstack">
           <h6 className="bg-light">Tags</h6> 
           &nbsp;
           <a className="btn btn-sm btn-secondary" 
             data-bs-toggle="collapse" href="#tagSpacer" role="button" 
             aria-expanded="false" aria-controls="tagSpacer"><small>[]</small></a>
-          <div className="collapse" id="tagSpacer">
+          <div className="collapse" id="tagSpacer" ref={tagSpacer}>
             <div className="m-2">
               {tags.map(
                 tag => (
