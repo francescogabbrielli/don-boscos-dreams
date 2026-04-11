@@ -136,19 +136,14 @@ function Search() {
     )
   }, [menuitems, filter])
 
+  // update filters based on current filtered results
   useEffect(() => {
-    // update filters based on current filtered results
     const tagsMap:Map<string, number> = new Map<string, number>()
     const yearSet:Set<number> = new Set<number>()
     filtered.forEach(item => {
-        item.tags?.forEach(tag => {
-          if (tag) {
-            tagsMap.set(tag, (tagsMap.get(tag) || 0) + 1)
-          }
-        })
-        item.date && yearSet.add(new Date(Date.parse(item.date)).getFullYear())
-      }
-    )
+      item.tags?.forEach(tag => tag && tagsMap.set(tag, (tagsMap.get(tag) || 0) + 1))
+      item.date && yearSet.add(new Date(Date.parse(item.date)).getFullYear())
+    })
     setTags([...tagsMap].sort().map(t => ({name: t[0], count: t[1]})))
     setYears([...yearSet].sort())
   }, [filtered])
@@ -164,11 +159,10 @@ function Search() {
   function filterTag(tagName: string) {
     return () => {
       setFilter((prev) => {
-        if (prev.tags?.includes(tagName)) {
-          return {...prev, tags: prev.tags.filter(t => t !== tagName)}
-        } else {
-          return {...prev, tags: prev.tags ? [...prev.tags, tagName] : [tagName]}
-        }
+        const tags = prev.tags?.includes(tagName) 
+          ? prev.tags.filter(t => t !== tagName) 
+          : prev.tags ? [...prev.tags, tagName] : [tagName]
+        return {...prev, init: true, tags: tags}
       })
     }
   }
