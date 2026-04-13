@@ -81,10 +81,9 @@ function Search() {
           return items.sort(
             (i1, i2) => i1.number && i2.number ? i1.number - i2.number : i1.date?.localeCompare(i2.date || "") || 0
           )
-        } else {
-          setError("No items found")
         }
 
+        setError("No items found")
         return []
 
     }
@@ -170,7 +169,7 @@ function Search() {
   function filterYear(event: ChangeEvent<HTMLSelectElement>) {
     const value = event.target.value
     setFilter((prev) => ({...prev, init: true, year: value ? parseInt(value) : undefined}))
-  } 
+  }
 
   return (
     <HelmetProvider>
@@ -224,7 +223,7 @@ function Search() {
           <div className="form-check m-2">
             <select className="form-select" id="yearFilter" onChange={filterYear}>
               <option selected></option>
-              {years.map(year => <option value={year} key={year}>{year}</option>)}
+              {years.map(year => <option selected={filter.year === year} value={year} key={year}>{year}</option>)}
             </select>
           </div>
         </div>
